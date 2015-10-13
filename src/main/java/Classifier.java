@@ -6,6 +6,6 @@ import java.util.List;
 public interface Classifier {
 
   public void loadDataset(List<Record> records);
-  public void train();
+  public Model train();
   public double test();
 }

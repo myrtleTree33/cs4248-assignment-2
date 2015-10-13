@@ -22,6 +22,10 @@ public class Record {
     this.label = label;
   }
 
+  public int getDimen() {
+    return vectors.size();
+  }
+
   public Vector getVectors() {
     return vectors;
   }

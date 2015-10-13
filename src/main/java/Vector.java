@@ -144,4 +144,10 @@ public class Vector {
     return Math.sqrt(result);
   }
 
+  @Override
+  public String toString() {
+    return "Vector{" +
+        "vectors=" + Arrays.toString(vectors) +
+        '}';
+  }
 }
