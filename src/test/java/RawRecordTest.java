@@ -70,4 +70,13 @@ public class RawRecordTest {
     records = RawRecord.parse(ROOT_PATH + "adapt_adopt.test", ROOT_PATH + "adapt_adopt.answer");
     RawRecord.print(records);
   }
+
+  @Ignore
+  @Test
+  public void testGetAllCollocations() throws Exception {
+    Set<String> collocations = RawRecord.getAllCollocations(records, -2,2);
+    for (String collocation : collocations) {
+      System.out.println(collocation);
+    }
+  }
 }

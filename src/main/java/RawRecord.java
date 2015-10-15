@@ -89,8 +89,8 @@ public class RawRecord {
   private int findIdx() {
     for (int i = 0; i < tokens.size(); i++) {
       String token = tokens.get(i);
-      if (token.equals(label)) {
-        return i;
+      if (token.equals(">>")) {
+        return i + 1;
       }
     }
     return -1;
@@ -155,6 +155,21 @@ public class RawRecord {
     return result;
   }
 
+  /**
+   * Get all collations in a list of {@link RawRecord} as a {@link List}.
+   * @param records
+   * @param start
+   * @param end
+   * @return
+   */
+  public static List<String> makeCollocationsList(List<RawRecord> records, int start, int end) {
+    List<String> result;
+    Set<String> collocations = getAllCollocations(records, start, end);
+    result = new ArrayList<>(collocations.size()); // allocate just enough memory
+    result.addAll(collocations);
+    return result;
+ }
+
   public void removePunctuation() {
     Set<String> punctuation = new HashSet<>(Arrays.asList(new String[]{
         "!",
@@ -195,6 +210,22 @@ public class RawRecord {
       }
     }
     return result;
+  }
+
+  /**
+   * Gets all collocations in a given trainset.
+   * @param records
+   * @param start
+   * @param end
+   * @return
+   */
+  public static Set<String> getAllCollocations(List<RawRecord> records, int start, int end) {
+    Set<String> collocations = new HashSet<>(records.size());
+    for (RawRecord record : records) {
+      String collocation = Util.getCollocation(record.tokens, start, end, record.getIdx());
+      collocations.add(collocation);
+    }
+    return collocations;
   }
 
   /**
@@ -256,5 +287,9 @@ public class RawRecord {
 
   public void setTokens(List<String> tokens) {
     this.tokens = tokens;
+  }
+
+  public int getIdx() {
+    return idx;
   }
 }

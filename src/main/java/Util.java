@@ -51,4 +51,54 @@ public class Util {
     return result;
   }
 
+  /**
+   * @deprecated
+   * @param tokens
+   * @param start
+   * @param end
+   * @param ref
+   * @return
+   */
+  public static List<String> getNGrams(List<String> tokens, int start, int end, int ref) {
+    List<String> collocations = new ArrayList<>();
+    int max = ref + end;
+    int min = ref - start;
+    if (max < tokens.size()) {
+      max = tokens.size() - end;
+    }
+    if (min > 0) {
+      min = start;
+    }
+    for (int i = min; i < max; i++) {
+      String collocation = Util.join(" ", tokens.subList(i - start, i + end));
+      collocations.add(collocation);
+    }
+    return collocations;
+  }
+
+  public static String getCollocation(List<String> tokens, int start, int end, int ref) {
+    int max = ref + end;
+    int min = ref + start;
+    if (max >= tokens.size()) {
+      max = tokens.size() - 1;
+    }
+    if (min < 0) {
+      min = 0;
+    }
+    String collocation = Util.join(" ", tokens.subList(min, max));
+    return collocation;
+  }
+
+  public static String join(String separator, List<String> tokens) {
+    if (tokens.size() < 1) return "";
+    StringBuffer sb = new StringBuffer();
+    sb.append(tokens.get(0));
+    for (int i = 1; i < tokens.size(); i++) {
+      sb.append(" ");
+      sb.append(tokens.get(i));
+    }
+    return sb.toString();
+  }
+
+
 }
