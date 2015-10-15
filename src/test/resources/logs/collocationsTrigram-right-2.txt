@@ -1,0 +1,58 @@
+Testing started at 9:03 PM ...
+9:03:17 PM: Executing external task 'test'...
+:compileJava UP-TO-DATE
+:processResources UP-TO-DATE
+:classes UP-TO-DATE
+:compileTestJava UP-TO-DATE
+:processTestResources
+:testClasses
+:test
+LearningRate=0.2 LearningMinThresholds=5.0 WordDiffMinThresholds=30 stopWordsStart=1 stopWordsEnd=3
+--- Results ---
+Label=adopt Accuracy=0.78
+Label=adapt Accuracy=0.8
+--- /Results ---
+
+LearningRate=0.2 LearningMinThresholds=5.0 WordDiffMinThresholds=30 stopWordsStart=2 stopWordsEnd=4
+--- Results ---
+Label=adopt Accuracy=0.78
+Label=adapt Accuracy=0.84
+--- /Results ---
+
+LearningRate=0.2 LearningMinThresholds=5.0 WordDiffMinThresholds=30 stopWordsStart=3 stopWordsEnd=5
+--- Results ---
+Label=adopt Accuracy=0.68
+Label=adapt Accuracy=0.8
+--- /Results ---
+
+LearningRate=0.2 LearningMinThresholds=5.0 WordDiffMinThresholds=30 stopWordsStart=4 stopWordsEnd=6
+--- Results ---
+Label=adopt Accuracy=0.68
+Label=adapt Accuracy=0.88
+--- /Results ---
+
+LearningRate=0.2 LearningMinThresholds=5.0 WordDiffMinThresholds=30 stopWordsStart=5 stopWordsEnd=7
+--- Results ---
+Label=adopt Accuracy=0.64
+Label=adapt Accuracy=0.8
+--- /Results ---
+
+LearningRate=0.2 LearningMinThresholds=5.0 WordDiffMinThresholds=30 stopWordsStart=6 stopWordsEnd=8
+--- Results ---
+Label=adopt Accuracy=0.74
+Label=adapt Accuracy=0.78
+--- /Results ---
+
+LearningRate=0.2 LearningMinThresholds=5.0 WordDiffMinThresholds=30 stopWordsStart=7 stopWordsEnd=9
+--- Results ---
+Label=adopt Accuracy=0.78
+Label=adapt Accuracy=0.88
+--- /Results ---
+
+Label=1 1
+Label=0 0
+Label=1 1
+Label=0 0
+BUILD SUCCESSFUL
+Total time: 7 mins 44.631 secs
+9:11:02 PM: External task execution finished 'test'.

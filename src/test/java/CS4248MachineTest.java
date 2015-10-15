@@ -35,13 +35,30 @@ public class CS4248MachineTest {
     float[] learningMinThresholds = new float[]{5};
     int[] wordDiffMinThresholds = new int[]{30};
     Pair[] stopWordsRef = new Pair[]{
-        new Pair(-3, -1),
-        new Pair(-4, -2),
-        new Pair(-5, -3),
-        new Pair(-6, -4),
-        new Pair(-7, -5),
-        new Pair(-8, -6),
-        new Pair(-9, -7)
+//        new Pair(-3, -1),
+//        new Pair(-4, -2),
+//        new Pair(-5, -3),
+//        new Pair(-6, -4),
+//        new Pair(-7, -5),
+//        new Pair(-8, -6),
+//        new Pair(-9, -7)
+
+//        new Pair(1, 3),
+//        new Pair(2,4),
+//        new Pair(3,5),
+//        new Pair(4,6),
+//        new Pair(5,7),
+//        new Pair(6,8),
+//        new Pair(7,9)
+
+        new Pair(1, 2),
+        new Pair(2,3),
+        new Pair(3,4),
+        new Pair(4,5),
+        new Pair(5,6),
+        new Pair(6,7),
+        new Pair(7,8)
+
     };
 
     for (int a = 0; a < learningRates.length; a++) {

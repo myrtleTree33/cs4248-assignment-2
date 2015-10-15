@@ -85,6 +85,9 @@ public class Util {
     if (min < 0) {
       min = 0;
     }
+    if (min >= tokens.size()) {
+      min = tokens.size() - 1;
+    }
     if (max < 0) {
       max = 0;
     }

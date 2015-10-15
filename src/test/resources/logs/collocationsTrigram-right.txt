@@ -1,0 +1,62 @@
+Testing started at 8:54 PM ...
+8:54:25 PM: Executing external task 'test'...
+Note: Some input files use unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
+:compileJava
+:processResources UP-TO-DATE
+:classes
+Note: /home/joel/repos/IdeaProjects/cs4248-assignment-2/src/test/java/RawRecordTest.java uses unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
+:compileTestJava
+:processTestResources UP-TO-DATE
+:testClasses
+:test
+LearningRate=0.2 LearningMinThresholds=5.0 WordDiffMinThresholds=30 stopWordsStart=1 stopWordsEnd=3
+--- Results ---
+Label=adopt Accuracy=0.76
+Label=adapt Accuracy=0.82
+--- /Results ---
+
+LearningRate=0.2 LearningMinThresholds=5.0 WordDiffMinThresholds=30 stopWordsStart=2 stopWordsEnd=4
+--- Results ---
+Label=adopt Accuracy=0.76
+Label=adapt Accuracy=0.76
+--- /Results ---
+
+LearningRate=0.2 LearningMinThresholds=5.0 WordDiffMinThresholds=30 stopWordsStart=3 stopWordsEnd=5
+--- Results ---
+Label=adopt Accuracy=0.7
+Label=adapt Accuracy=0.8
+--- /Results ---
+
+LearningRate=0.2 LearningMinThresholds=5.0 WordDiffMinThresholds=30 stopWordsStart=4 stopWordsEnd=6
+--- Results ---
+Label=adopt Accuracy=0.7
+Label=adapt Accuracy=0.86
+--- /Results ---
+
+LearningRate=0.2 LearningMinThresholds=5.0 WordDiffMinThresholds=30 stopWordsStart=5 stopWordsEnd=7
+--- Results ---
+Label=adopt Accuracy=0.76
+Label=adapt Accuracy=0.84
+--- /Results ---
+
+LearningRate=0.2 LearningMinThresholds=5.0 WordDiffMinThresholds=30 stopWordsStart=6 stopWordsEnd=8
+--- Results ---
+Label=adopt Accuracy=0.8
+Label=adapt Accuracy=0.8
+--- /Results ---
+
+LearningRate=0.2 LearningMinThresholds=5.0 WordDiffMinThresholds=30 stopWordsStart=7 stopWordsEnd=9
+--- Results ---
+Label=adopt Accuracy=0.78
+Label=adapt Accuracy=0.84
+--- /Results ---
+
+Label=0 0
+Label=1 1
+Label=0 0
+Label=1 1
+BUILD SUCCESSFUL
+Total time: 7 mins 46.118 secs
+9:02:12 PM: External task execution finished 'test'.
