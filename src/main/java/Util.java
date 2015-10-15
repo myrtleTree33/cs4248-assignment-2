@@ -81,6 +81,9 @@ public class Util {
     int min = ref + start;
     if (max >= tokens.size()) {
       max = tokens.size() - 1;
+      if (max < 0) {
+        max = 0;
+      }
     }
     if (min < 0) {
       min = 0;

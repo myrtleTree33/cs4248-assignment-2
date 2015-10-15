@@ -25,10 +25,10 @@ public class CS4248MachineTest {
     float[] learningMinThresholds = new float[]{5};
     int[] wordDiffMinThresholds = new int[]{30};
     int[] stopWordsStart = new int[]{
-        -3,-4,
+        -3,-4,-5,-6,-7,-8,-9
     };
     int[] stopWordsEnd = new int[]{
-        -1,-1
+        -1,-2,-3,-4,-5,-6,-7
     };
 
     for (int a = 0; a < learningRates.length; a++) {
