@@ -1,4 +1,5 @@
 import java.io.FileNotFoundException;
+import java.util.Map;
 
 /**
  * Created by joel on 10/14/15.
@@ -6,6 +7,5 @@ import java.io.FileNotFoundException;
 public interface Machine {
 
   void train(String datasetFileName) throws FileNotFoundException;
-  void test(String testFileName);
-
+  Map<String, PredictionResult> test(String questionFilename, String answerFilename) throws FileNotFoundException;
 }

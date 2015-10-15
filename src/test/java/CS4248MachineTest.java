@@ -1,7 +1,5 @@
 import org.junit.Test;
 
-import static org.junit.Assert.*;
-
 /**
  * Created by joel on 10/14/15.
  */
@@ -13,6 +11,7 @@ public class CS4248MachineTest {
   public void testTrain() throws Exception {
     CS4248Machine machine = new CS4248Machine();
     machine.train(ROOT_PATH + "adapt_adopt.train");
+    PredictionResult.printResults(machine.test(ROOT_PATH + "adapt_adopt.test", ROOT_PATH + "adapt_adopt.answer"));
 
   }
 }

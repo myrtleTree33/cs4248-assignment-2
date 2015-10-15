@@ -35,9 +35,49 @@ public class RawRecord {
     while (scanner.hasNextLine()) {
       List<String> currTokens = tokenize(scanner.nextLine());
       String currId = currTokens.remove(0);
-      String foundLabel = getLabelAndClean(currTokens);
+      String foundLabel = getLabelAndClean(currTokens, true);
       result.add(new RawRecord(foundLabel, currId, currTokens));
     }
+    return result;
+  }
+
+  private static Map<String, String> makeAnswerMap(Scanner in) {
+    Map<String, String> result = new HashMap<>();
+    while (in.hasNextLine()) {
+      List<String> tokens = tokenize(in.nextLine());
+      String id = tokens.get(0);
+      String label = tokens.get(1);
+      result.put(id, label);
+    }
+    return result;
+  }
+
+  private static Map<String, List<String>> makeQuestionMap(Scanner in) {
+    Map<String, List<String>> result = new HashMap<>();
+    while (in.hasNextLine()) {
+      List<String> tokens = tokenize(in.nextLine());
+      String id = tokens.remove(0);
+      getLabelAndClean(tokens, false);
+      result.put(id, tokens);
+    }
+    return result;
+  }
+
+  public static List<RawRecord> parse(String questionFilename, String answerFilename) throws FileNotFoundException {
+    List<RawRecord> result = new ArrayList<>();
+    Map<String, List<String>> questions = makeQuestionMap(new Scanner(new File(questionFilename)));
+    Map<String, String> answers = makeAnswerMap(new Scanner(new File(answerFilename)));
+
+    Iterator it = answers.entrySet().iterator();
+    while (it.hasNext()) {
+      Map.Entry curr = (Map.Entry) it.next();
+      String id = (String) curr.getKey();
+      String label = (String) curr.getValue();
+      List<String> tokens = questions.get(id);
+      RawRecord record = new RawRecord(label, id, tokens);
+      result.add(record);
+    }
+
     return result;
   }
 
@@ -62,17 +102,17 @@ public class RawRecord {
    * @param currTokens
    * @return
    */
-  private static String getLabelAndClean(List<String> currTokens) {
+  private static String getLabelAndClean(List<String> currTokens, boolean hasLabel) {
     String foundLabel = "";
     List<String> detected = new ArrayList<>(2);
     for (int i = 0; i < currTokens.size(); i++) {
-      String curr = currTokens.get(i).toLowerCase().replaceAll("[\"\':;,./?!@-_]","");
+      String curr = currTokens.get(i).toLowerCase().replaceAll("[\"\':;,./?!@-_]", "");
       currTokens.set(i, curr); // to lower case as well
       if (curr.equals(">>")) {
-        foundLabel = currTokens.get(i + 1); // the label
-//        detected.add(currTokens.get(i)); // >>
-        detected.add(currTokens.get(i + 1)); // remove target word
-//        detected.add(currTokens.get(i + 2)); // <<
+        if (hasLabel) { // if the label is within text
+          foundLabel = currTokens.get(i + 1); // the label
+          detected.add(foundLabel); // remove target word
+        }
       }
     }
     currTokens.removeAll(detected);

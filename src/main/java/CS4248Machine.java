@@ -1,6 +1,8 @@
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by joel on 10/14/15.
@@ -30,8 +32,26 @@ public class CS4248Machine implements Machine {
   }
 
   @Override
-  public void test(String testFileName) {
-
+  public Map<String, PredictionResult> test(String questionFilename, String answerFilename) throws FileNotFoundException {
+    List<RawRecord> testSet = RawRecord.parse(questionFilename, answerFilename);
+    Map<String, PredictionResult> results = new HashMap<>();
+    for (RawRecord record : testSet) {
+      Record curr = convToRecord(record, vocabulary);
+      String predicted = getIntLabel(model.evaluate(curr.getVectors()));
+      String actual = record.getLabel();
+      if (!results.containsKey(actual)) {
+        results.put(actual, new PredictionResult());
+      }
+      if (predicted.equals(actual)) {
+        PredictionResult pr = results.get(actual);
+        pr.incCorrect();
+        pr.incTotal();
+      } else {
+        PredictionResult pr = results.get(actual);
+        pr.incTotal();
+      }
+    }
+    return results;
   }
 
   private void mapLabels(List<RawRecord> trainset) {
@@ -43,6 +63,10 @@ public class CS4248Machine implements Machine {
         break;
       }
     }
+  }
+
+  private String getIntLabel(int labelRef) {
+    return mappings.get(labelRef);
   }
 
   private int getLabelInt(String label) {

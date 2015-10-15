@@ -16,6 +16,7 @@ public class RawRecordTest {
   @Before
   public void setUp() throws Exception {
     records = RawRecord.parse(ROOT_PATH + "adapt_adopt.train");
+
   }
 
   @After
@@ -63,4 +64,10 @@ public class RawRecordTest {
     System.out.println(sb.toString());
   }
 
+  @Ignore
+  @Test
+  public void testParseAnswers() throws Exception {
+    records = RawRecord.parse(ROOT_PATH + "adapt_adopt.test", ROOT_PATH + "adapt_adopt.answer");
+    RawRecord.print(records);
+  }
 }
