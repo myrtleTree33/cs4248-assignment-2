@@ -1,8 +1,5 @@
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by joel on 10/14/15.
@@ -19,7 +16,7 @@ public class CS4248Machine implements Machine {
   }
 
   @Override
-  public void train(String datasetFileName) throws FileNotFoundException {
+  public void train(String datasetFileName, String stopWordsFileName, int minThreshold, float learningMinThreshold, double learningRate) throws FileNotFoundException {
     List<RawRecord> trainset = RawRecord.parse(datasetFileName);
     List<Record> records = new ArrayList<>();
     mapLabels(trainset); // generate label mapping
@@ -27,8 +24,33 @@ public class CS4248Machine implements Machine {
     for (RawRecord r : trainset) {
       records.add(convToRecord(r, vocabulary));
     }
+
+    // reduce features by including relevant stop words
+    Set<String> stopWords = optimizeStopWords(
+        trainset,
+        Util.loadStopWords(stopWordsFileName),
+        minThreshold
+    );
+    RawRecord.removeTokens(trainset, stopWords);
+
     classifier.loadDataset(records);
-    model = classifier.train(5, 2);
+    model = classifier.train(learningMinThreshold, learningRate);
+  }
+
+  private Set<String> optimizeStopWords(List<RawRecord> trainset, Set<String> stopWordsAll, int minThreshold) {
+    HashMap<String, List<RawRecord>> partitions = RawRecord.segment(trainset);
+    // convert all label partitions to array list for processing
+    List<String> keys = new ArrayList<>(2);
+    for (String label : partitions.keySet()) {
+      keys.add(label);
+    }
+    Set<String> optimizedStopWords = Util.selectDistinctStopWords(
+        stopWordsAll,
+        partitions.get(keys.get(0)),
+        partitions.get(keys.get(0)),
+        minThreshold
+    );
+    return optimizedStopWords;
   }
 
   @Override

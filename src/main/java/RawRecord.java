@@ -197,6 +197,23 @@ public class RawRecord {
     return result;
   }
 
+  /**
+   * Partitions a list of records by their labels.
+   * @param allRecords
+   * @return
+   */
+  public static HashMap<String, List<RawRecord>> segment(List<RawRecord> allRecords) {
+    HashMap<String, List<RawRecord>> result = new HashMap<>();
+    for (RawRecord r : allRecords) {
+      String label = r.getLabel();
+      if (!result.containsKey(label)) {
+        result.put(label, new ArrayList<RawRecord>());
+      }
+      result.get(label).add(r);
+    }
+    return result;
+  }
+
   public static void print(List<RawRecord> rawRecords) {
     StringBuffer sb = new StringBuffer();
     for (RawRecord record : rawRecords) {
