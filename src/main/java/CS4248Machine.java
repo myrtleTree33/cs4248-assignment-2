@@ -8,7 +8,7 @@ public class CS4248Machine implements Machine {
 
   private List<String> mappings;
   private List<String> vocabulary;
-  private List<String> collocations;
+  private List<String> collocationNGrams;
   private List<String> features;
   private LogisticRegressionClassifier classifier;
   private Model model;
@@ -18,13 +18,15 @@ public class CS4248Machine implements Machine {
   private int wordDiffMinThreshold;
   private int stopWordsStart;
   private int stopWordsEnd;
+  private int nGramSize;
 
-  public void setParam(double learningRate, float learningMinThreshold, int wordDiffMinThreshold, int stopWordsStart, int stopWordsEnd) {
+  public void setParam(double learningRate, float learningMinThreshold, int wordDiffMinThreshold, int stopWordsStart, int stopWordsEnd, int nGramSize) {
     this.learningRate = learningRate;
     this.learningMinThreshold = learningMinThreshold;
     this.wordDiffMinThreshold = wordDiffMinThreshold;
     this.stopWordsStart = stopWordsStart;
     this.stopWordsEnd = stopWordsEnd;
+    this.nGramSize = nGramSize;
   }
 
   public CS4248Machine() {
@@ -42,17 +44,21 @@ public class CS4248Machine implements Machine {
         Util.loadStopWords(stopWordsFileName),
         wordDiffMinThreshold
     );
+
     RawRecord.removeTokens(trainset, stopWords);
+//    System.out.println(stopWords.size());
+//    RawRecord.print(trainset);
 
     mapLabels(trainset); // generate label mapping
 
+    // TODO comment out this dump statement
     vocabulary = RawRecord.makeVocabularyList(trainset);
-    collocations = RawRecord.makeCollocationsList(trainset, stopWordsStart, stopWordsEnd);
+    collocationNGrams = RawRecord.makeCollocationsNGramsList(nGramSize, trainset, stopWordsStart, stopWordsEnd);
 
 
     features = new ArrayList<>();
     features.addAll(vocabulary);
-    features.addAll(collocations);
+    features.addAll(collocationNGrams);
 
     for (RawRecord r : trainset) {
       records.add(convToRecord(r, features));
@@ -72,7 +78,7 @@ public class CS4248Machine implements Machine {
     Set<String> optimizedStopWords = Util.selectDistinctStopWords(
         stopWordsAll,
         partitions.get(keys.get(0)),
-        partitions.get(keys.get(0)),
+        partitions.get(keys.get(1)),
         minThreshold
     );
     return optimizedStopWords;
@@ -127,7 +133,7 @@ public class CS4248Machine implements Machine {
   }
 
   private Record convToRecord(RawRecord in, List<String> features) {
-    Vector v = Vector.zero(features.size() + collocations.size());
+    Vector v = Vector.zero(features.size() + collocationNGrams.size());
     // first process individual word tokens ---
     for (String token : in.getTokens()) {
       for (int i = 0; i < features.size(); i++) {
@@ -138,14 +144,17 @@ public class CS4248Machine implements Machine {
       }
     }
 
-    // then process collocations ---
+    // then process collocationNGrams ---
     //TODO move out start and end indexes
     // TODO refactor loops here
-    String collocation = Util.getCollocation(in.getTokens(), stopWordsStart, stopWordsEnd, in.getIdx());
-    for (int i = 0; i < features.size(); i++) {
-      if (collocation.equals(features.get(i))) {
-        v.set(i, 1);
-        break;
+    List<String> collocation = Util.getCollocation(in.getTokens(), stopWordsStart, stopWordsEnd, in.getIdx());
+    List<String> nGrams = Util.getNGrams(nGramSize, collocation);
+    for (String nGram : nGrams) {
+      for (int i = features.size() - 1; i >= 0; i--) {
+        if (nGram.equals(features.get(i))) {
+          v.set(i, 1);
+          break;
+        }
       }
     }
 

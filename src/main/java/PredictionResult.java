@@ -33,16 +33,19 @@ public class PredictionResult {
 
   public static void printResults(Map<String, PredictionResult> results) {
     StringBuffer sb = new StringBuffer();
+    double correct = 0;
+    double total = 0;
     sb.append("--- Results ---\n");
     Iterator it = results.entrySet().iterator();
     while (it.hasNext()) {
       Map.Entry<String, PredictionResult> curr = (Map.Entry<String, PredictionResult>) it.next();
       sb.append("Label=" + curr.getKey() + " Accuracy=" + curr.getValue().getAccuracy() + "\n");
-
+      correct += curr.getValue().correct;
+      total += curr.getValue().total;
     }
+    sb.append("TOTAL ACCURACY=" + correct / total + "\n");
     sb.append("--- /Results ---\n");
     System.out.println(sb.toString());
   }
-
 
 }

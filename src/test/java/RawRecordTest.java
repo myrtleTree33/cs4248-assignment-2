@@ -74,8 +74,8 @@ public class RawRecordTest {
   @Ignore
   @Test
   public void testGetAllCollocations() throws Exception {
-    Set<String> collocations = RawRecord.getAllCollocations(records, -2,2);
-    for (String collocation : collocations) {
+    Set<String> collocationsNGram = RawRecord.getAllCollocationsAsNGram(3, records, -2, 2);
+    for (String collocation : collocationsNGram) {
       System.out.println(collocation);
     }
   }

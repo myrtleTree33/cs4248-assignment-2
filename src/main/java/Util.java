@@ -21,6 +21,7 @@ public class Util {
   /**
    * Function to select distinct stop words, based on analysis of 2 individual corpuses.
    * If there are huge differences greater than minThreshold, then these words are used.
+   *
    * @param stopWords
    * @param corpus1
    * @param corpus2
@@ -35,7 +36,7 @@ public class Util {
 
     for (String word : stopWords) {
       int count1, count2, diff;
-      count1 = count2 = diff = 0;
+      count1 = count2 = 0;
       if (distrCorpus1.containsKey(word)) {
         count1 = distrCorpus1.get(word);
       }
@@ -43,7 +44,7 @@ public class Util {
         count2 = distrCorpus2.get(word);
       }
       diff = Math.abs(count1 - count2);
-      if (diff >= minThreshold) {
+      if (diff <= minThreshold) {
         result.add(word);
       }
     }
@@ -52,12 +53,12 @@ public class Util {
   }
 
   /**
-   * @deprecated
    * @param tokens
    * @param start
    * @param end
    * @param ref
    * @return
+   * @deprecated
    */
   public static List<String> getNGrams(List<String> tokens, int start, int end, int ref) {
     List<String> collocations = new ArrayList<>();
@@ -76,7 +77,7 @@ public class Util {
     return collocations;
   }
 
-  public static String getCollocation(List<String> tokens, int start, int end, int ref) {
+  public static List<String> getCollocation(List<String> tokens, int start, int end, int ref) {
     int max = ref + end;
     int min = ref + start;
     if (max >= tokens.size()) {
@@ -91,8 +92,8 @@ public class Util {
     if (max < 0) {
       max = 0;
     }
-    String collocation = Util.join(" ", tokens.subList(min, max));
-    return collocation;
+//    String collocation = Util.join(" ", tokens.subList(min, max));
+    return tokens.subList(min, max);
   }
 
   public static String join(String separator, List<String> tokens) {
@@ -106,5 +107,11 @@ public class Util {
     return sb.toString();
   }
 
-
+  public static List<String> getNGrams(int n, List<String> collocation) {
+    List<String> nGrams = new ArrayList<>();
+    for (int i = 0; i < collocation.size() - n; i++) {
+      nGrams.add(Util.join(" ", collocation.subList(i, i + n)));
+    }
+    return nGrams;
+  }
 }

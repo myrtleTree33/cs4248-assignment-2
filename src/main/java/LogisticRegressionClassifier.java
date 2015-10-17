@@ -44,9 +44,11 @@ public class LogisticRegressionClassifier implements Classifier {
     // init weights to zero
     Vector weights = Vector.zero(getDimen());
     // for each weight
+//    for (int x = 0; x < 5; x++) {
     for (int i = 0; i < getDimen(); i++) {
       trainWeightStochastic(weights, i, alpha);
     }
+//    }
     return new Model(weights);
   }
 

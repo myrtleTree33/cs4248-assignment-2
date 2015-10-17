@@ -157,18 +157,19 @@ public class RawRecord {
 
   /**
    * Get all collations in a list of {@link RawRecord} as a {@link List}.
+   *
    * @param records
    * @param start
    * @param end
    * @return
    */
-  public static List<String> makeCollocationsList(List<RawRecord> records, int start, int end) {
+  public static List<String> makeCollocationsNGramsList(int n, List<RawRecord> records, int start, int end) {
     List<String> result;
-    Set<String> collocations = getAllCollocations(records, start, end);
+    Set<String> collocations = getAllCollocationsAsNGram(n, records, start, end);
     result = new ArrayList<>(collocations.size()); // allocate just enough memory
     result.addAll(collocations);
     return result;
- }
+  }
 
   public void removePunctuation() {
     Set<String> punctuation = new HashSet<>(Arrays.asList(new String[]{
@@ -214,22 +215,26 @@ public class RawRecord {
 
   /**
    * Gets all collocations in a given trainset.
+   *
    * @param records
    * @param start
    * @param end
    * @return
    */
-  public static Set<String> getAllCollocations(List<RawRecord> records, int start, int end) {
+  public static Set<String> getAllCollocationsAsNGram(int n, List<RawRecord> records, int start, int end) {
     Set<String> collocations = new HashSet<>(records.size());
     for (RawRecord record : records) {
-      String collocation = Util.getCollocation(record.tokens, start, end, record.getIdx());
-      collocations.add(collocation);
+      List<String> collocation = Util.getCollocation(record.tokens, start, end, record.getIdx());
+      // TODO refactor trigrams to Ngram customizable
+      List<String> nGrams = Util.getNGrams(n, collocation);
+      collocations.addAll(nGrams);
     }
     return collocations;
   }
 
   /**
    * Partitions a list of records by their labels.
+   *
    * @param allRecords
    * @return
    */
