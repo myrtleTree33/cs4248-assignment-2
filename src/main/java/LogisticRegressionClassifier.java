@@ -42,22 +42,23 @@ public class LogisticRegressionClassifier implements Classifier {
 
   public Model train() {
     // init weights to zero
+    Collections.shuffle(records); // shuffle the collection
     Vector weights = Vector.zero(getDimen());
-    // for each weight
-//    for (int x = 0; x < 5; x++) {
-    for (int i = 0; i < getDimen(); i++) {
-      trainWeightStochastic(weights, i, alpha);
+
+    for (Record r : records) {
+      // use stochastic GA
+      trainWeightStochastic(r, weights, alpha);
     }
-//    }
+
     return new Model(weights);
   }
 
-  private void trainWeightStochastic(Vector existingWeights, int index, double alpha) {
-    Collections.shuffle(records); // shuffle the collection
-    for (Record r : records) {
-      double actualX = r.getVectors().get(index);
-      double newWeight = existingWeights.get(index) + alpha * actualX * (r.getLabel() - 1 / (1 + Math.exp(-1 * existingWeights.dot(r.getVectors()))));
-      existingWeights.set(index, newWeight);
+  private void trainWeightStochastic(Record r, Vector existingWeights, double alpha) {
+    // for each weight
+    for (int i = 0; i < getDimen(); i++) {
+      double actualX = r.getVectors().get(i);
+      double newWeight = existingWeights.get(i) + alpha * actualX * (r.getLabel() - 1 / (1 + Math.exp(-1 * existingWeights.dot(r.getVectors()))));
+      existingWeights.set(i, newWeight);
     }
   }
 
