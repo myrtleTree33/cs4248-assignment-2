@@ -42,7 +42,6 @@ public class LogisticRegressionClassifier implements Classifier {
 
   public Model train() {
     // init weights to zero
-    Collections.shuffle(records); // shuffle the collection
     Vector weights = Vector.zero(getDimen());
 
     for (Record r : records) {

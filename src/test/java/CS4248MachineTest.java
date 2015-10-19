@@ -24,7 +24,7 @@ public class CS4248MachineTest {
   @Test
   public void testTrain() throws Exception {
     CS4248Machine machine = new CS4248Machine();
-    machine.setParam(0.1, 5, 30, -3, -1, 3);
+    machine.setParam(0.1, 5, 30, -3, -1, 3, 2);
     machine.train(ROOT_PATH + "adapt_adopt.train", ROOT_PATH + "stopwd.txt");
     PredictionResult.printResults(machine.test(ROOT_PATH + "adapt_adopt.test", ROOT_PATH + "adapt_adopt.answer"));
   }
@@ -96,7 +96,8 @@ public class CS4248MachineTest {
                   wordDiffMinThresholds[c],
                   stopWordsRef[d].a,
                   stopWordsRef[d].b,
-                  nGramSize[e]
+                  nGramSize[e],
+                  7
               );
               machine.train(trainFilePath, stopWordFilePath);
               System.out.println(

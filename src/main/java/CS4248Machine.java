@@ -19,14 +19,16 @@ public class CS4248Machine implements Machine {
   private int stopWordsStart;
   private int stopWordsEnd;
   private int nGramSize;
+  private int folds;
 
-  public void setParam(double learningRate, float learningMinThreshold, int wordDiffMinThreshold, int stopWordsStart, int stopWordsEnd, int nGramSize) {
+  public void setParam(double learningRate, float learningMinThreshold, int wordDiffMinThreshold, int stopWordsStart, int stopWordsEnd, int nGramSize, int folds) {
     this.learningRate = learningRate;
     this.learningMinThreshold = learningMinThreshold;
     this.wordDiffMinThreshold = wordDiffMinThreshold;
     this.stopWordsStart = stopWordsStart;
     this.stopWordsEnd = stopWordsEnd;
     this.nGramSize = nGramSize;
+    this.folds = folds;
   }
 
   public CS4248Machine() {
@@ -63,9 +65,41 @@ public class CS4248Machine implements Machine {
     for (RawRecord r : trainset) {
       records.add(convToRecord(r, features));
     }
+    Collections.shuffle(records); // shuffle the collection to ensure unbiased ordering
 
+    model = trainNFolds(records, folds);
+  }
+
+  private Model train(List<Record> records) {
     classifier.loadDataset(records);
-    model = classifier.train(learningMinThreshold, learningRate);
+    Model model = classifier.train(learningMinThreshold, learningRate);
+    return model;
+  }
+
+  private Model trainNFolds(List<Record> records, int nFolds) {
+    Model bestModel = null;
+    double bestAccuracy = 0d;
+    int stepSize = records.size() / nFolds;
+    for (int i = 0; i < nFolds; i++) {
+      System.out.println("Training fold " + i + "..");
+      int start = stepSize * i;
+      int end = Math.min(start + stepSize - 1, records.size());
+      System.out.println("Start=" + start + " End=" + end);
+      // generate the train and test sets
+      List<Record> currTestSet = records.subList(start, end);
+      List<Record> currTrainSet = new ArrayList<>();
+      currTrainSet.addAll(records.subList(0, start));
+      currTrainSet.addAll(records.subList(end, records.size() - 1));
+      Model currModel = train(currTrainSet);
+      double currAccuracy = currModel.testAccuracy(currTestSet);
+      System.out.println("currAccuracy=" + currAccuracy);
+      if (currAccuracy > bestAccuracy) {
+        bestAccuracy = currAccuracy;
+        bestModel = currModel;
+      }
+    }
+    System.out.println("Using model with accuracy " + bestAccuracy);
+    return bestModel;
   }
 
   private Set<String> optimizeStopWords(List<RawRecord> trainset, Set<String> stopWordsAll, int minThreshold) {
@@ -118,10 +152,22 @@ public class CS4248Machine implements Machine {
     }
   }
 
+  /**
+   * Gets an Int label as a String.
+   *
+   * @param labelRef
+   * @return
+   */
   private String getIntLabel(int labelRef) {
     return mappings.get(labelRef);
   }
 
+  /**
+   * Gets the a String label by index.
+   *
+   * @param label
+   * @return
+   */
   private int getLabelInt(String label) {
     for (int i = 0; i < mappings.size(); i++) {
       String curr = mappings.get(i);
@@ -132,6 +178,14 @@ public class CS4248Machine implements Machine {
     return -1;
   }
 
+  /**
+   * Covnerts a {@link RawRecord} to a low-level {@link Record}, based on a feature
+   * index.
+   *
+   * @param in The record to convert
+   * @param features The feature index
+   * @return
+   */
   private Record convToRecord(RawRecord in, List<String> features) {
     Vector v = Vector.zero(features.size() + collocationNGrams.size());
     // first process individual word tokens ---
