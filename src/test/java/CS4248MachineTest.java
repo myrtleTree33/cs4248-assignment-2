@@ -24,20 +24,23 @@ public class CS4248MachineTest {
   @Test
   public void testTrain() throws Exception {
     CS4248Machine machine = new CS4248Machine();
-    machine.setParam(0.1, 5, 30, -3, -1, 3, 2);
+    machine.setParam(0.1, 0.8, 0.00000000001, LogisticRegressionClassifier.NO_TIMEOUT, 5, 30, -3, -1, 3, 2);
     machine.train(ROOT_PATH + "adapt_adopt.train", ROOT_PATH + "stopwd.txt");
     PredictionResult.printResults(machine.test(ROOT_PATH + "adapt_adopt.test", ROOT_PATH + "adapt_adopt.answer"));
   }
 
-//  @Ignore
+  //  @Ignore
   @Test
   public void testTrainGenerative() throws Exception {
     CS4248Machine machine = new CS4248Machine();
-
+    int numFolds = 5;
     int[] nGramSize = new int[]{7};
     double[] learningRates = new double[]{0.05};
+    double learningDecay = 0.85;
+    double terminationThreshold = 0.0000000001;
+    long timeoutPerDimen = LogisticRegressionClassifier.NO_TIMEOUT;
     float[] learningMinThresholds = new float[]{5};
-    int[] wordDiffMinThresholds = new int[]{1};
+    int[] wordDiffMinThresholds = new int[]{20};
     Pair[] stopWordsRef = new Pair[]{
 //        new Pair(-3, -1),
 //        new Pair(-4, -2),
@@ -92,12 +95,15 @@ public class CS4248MachineTest {
             for (int e = 0; e < nGramSize.length; e++) {
               machine.setParam(
                   learningRates[a],
+                  learningDecay,
+                  terminationThreshold,
+                  timeoutPerDimen,
                   learningMinThresholds[b],
                   wordDiffMinThresholds[c],
                   stopWordsRef[d].a,
                   stopWordsRef[d].b,
                   nGramSize[e],
-                  7
+                  numFolds
               );
               machine.train(trainFilePath, stopWordFilePath);
               System.out.println(

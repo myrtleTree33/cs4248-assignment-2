@@ -34,7 +34,7 @@ public class LogisticRegressionClassifierTest {
   @Test
   public void testTrain() throws Exception {
     classifier.loadDataset(dataset);
-    Model model = classifier.train(5, 2);
+    Model model = classifier.train(5, 2, 0.8, 0.00000000001, LogisticRegressionClassifier.NO_TIMEOUT);
     for (int i = 0; i < dataset.size(); i++) {
       System.out.print("Label=" + dataset.get(i).getLabel() + " ");
       System.out.println(model.evaluate(dataset.get(i).getVectors()) + "");

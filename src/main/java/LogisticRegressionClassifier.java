@@ -1,4 +1,4 @@
-import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -6,9 +6,14 @@ import java.util.List;
  */
 public class LogisticRegressionClassifier implements Classifier {
 
+  public static final long NO_TIMEOUT = -1;
+
   List<Record> records;
   float minThreshold = 2;
   private double alpha;
+  private double learningDecay;
+  private double terminationThreshold;
+  private long timeoutPerDimen;
 
   public LogisticRegressionClassifier() {
   }
@@ -16,6 +21,9 @@ public class LogisticRegressionClassifier implements Classifier {
   public void loadDataset(List<Record> records) {
     this.records = records;
     this.alpha = 2;
+    this.learningDecay = 0.8;
+    this.terminationThreshold = 0.000000001;
+    this.timeoutPerDimen = NO_TIMEOUT;
   }
 
   /**
@@ -44,26 +52,43 @@ public class LogisticRegressionClassifier implements Classifier {
     // init weights to zero
     Vector weights = Vector.zero(getDimen());
 
-    for (Record r : records) {
-      // use stochastic GA
-      trainWeightStochastic(r, weights, alpha);
-    }
-
+    // use stochastic GA
+    trainWeightStochastic(records, weights, alpha, learningDecay, terminationThreshold, timeoutPerDimen);
     return new Model(weights);
   }
 
-  private void trainWeightStochastic(Record r, Vector existingWeights, double alpha) {
+  private void trainWeightStochastic(List<Record> records,
+                                     Vector existingWeights,
+                                     double alpha,
+                                     double learningDecay,
+                                     double terminationThreshold,
+                                     long timeoutPerDimen) {
+//    long startTime = new Date().getTime();
     // for each weight
     for (int i = 0; i < getDimen(); i++) {
-      double actualX = r.getVectors().get(i);
-      double newWeight = existingWeights.get(i) + alpha * actualX * (r.getLabel() - 1 / (1 + Math.exp(-1 * existingWeights.dot(r.getVectors()))));
-      existingWeights.set(i, newWeight);
+      double diff = 999;
+      double currAlpha = alpha;
+      while (diff > terminationThreshold) {
+//        boolean hasTimeout = ((new Date().getTime() - startTime) < timeoutPerDimen || timeoutPerDimen != NO_TIMEOUT)
+        currAlpha *= learningDecay;
+        for (int x = 0; x < records.size(); x++) {
+          Record r = records.get(x);
+          double actualX = r.getVectors().get(i);
+          double newWeight = existingWeights.get(i) + currAlpha * actualX * (r.getLabel() - 1 / (1 + Math.exp(-1 * existingWeights.dot(r.getVectors()))));
+          diff = Math.abs(newWeight - existingWeights.get(i));
+          existingWeights.set(i, newWeight);
+        }
+      }
     }
+    System.out.println("Exited!");
   }
 
-  public Model train(float minThreshold, double alpha) {
+  public Model train(float minThreshold, double alpha, double learningDecay, double terminationThreshold, long timeoutPerDimen) {
     this.minThreshold = minThreshold;
     this.alpha = alpha;
+    this.learningDecay = learningDecay;
+    this.terminationThreshold = terminationThreshold;
+    this.timeoutPerDimen = timeoutPerDimen;
     return train();
   }
 

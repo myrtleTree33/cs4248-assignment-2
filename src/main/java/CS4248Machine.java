@@ -20,9 +20,24 @@ public class CS4248Machine implements Machine {
   private int stopWordsEnd;
   private int nGramSize;
   private int folds;
+  private double learningDecay;
+  private double terminationThreshold;
+  private long timeoutPerDimen;
 
-  public void setParam(double learningRate, float learningMinThreshold, int wordDiffMinThreshold, int stopWordsStart, int stopWordsEnd, int nGramSize, int folds) {
+  public void setParam(double learningRate,
+                       double learningDecay,
+                       double terminationThreshold,
+                       long timeoutPerDimen,
+                       float learningMinThreshold,
+                       int wordDiffMinThreshold,
+                       int stopWordsStart,
+                       int stopWordsEnd,
+                       int nGramSize,
+                       int folds) {
     this.learningRate = learningRate;
+    this.learningDecay = learningDecay;
+    this.terminationThreshold = terminationThreshold;
+    this.timeoutPerDimen = timeoutPerDimen;
     this.learningMinThreshold = learningMinThreshold;
     this.wordDiffMinThreshold = wordDiffMinThreshold;
     this.stopWordsStart = stopWordsStart;
@@ -72,7 +87,7 @@ public class CS4248Machine implements Machine {
 
   private Model train(List<Record> records) {
     classifier.loadDataset(records);
-    Model model = classifier.train(learningMinThreshold, learningRate);
+    Model model = classifier.train(learningMinThreshold, learningRate, learningDecay, terminationThreshold, timeoutPerDimen);
     return model;
   }
 
@@ -182,7 +197,7 @@ public class CS4248Machine implements Machine {
    * Covnerts a {@link RawRecord} to a low-level {@link Record}, based on a feature
    * index.
    *
-   * @param in The record to convert
+   * @param in       The record to convert
    * @param features The feature index
    * @return
    */
