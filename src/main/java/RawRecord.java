@@ -229,6 +229,16 @@ public class RawRecord {
       List<String> nGrams = Util.getNGrams(n, collocation);
       collocations.addAll(nGrams);
     }
+
+    //Monkey Patch return collocation straight instead
+//    for (RawRecord record : records) {
+//      int max = record.getTokens().size() - 1;
+//      int realStart = Math.min(Math.max(0, record.getIdx() + start), max);
+//      int realEnd = Math.max(0, Math.min(max, record.getIdx() - start));
+//      String collocation = Util.join(" ", record.getTokens().subList(realStart, realEnd));
+//      collocations.add(collocation);
+//    }
+
     return collocations;
   }
 

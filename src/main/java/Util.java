@@ -7,6 +7,12 @@ import java.util.*;
  */
 public class Util {
 
+  /**
+   * Load stop words from file
+   * @param filename
+   * @return
+   * @throws FileNotFoundException
+   */
   public static Set<String> loadStopWords(String filename) throws FileNotFoundException {
     Set<String> result = new HashSet<>();
     Scanner scanner = new Scanner(new File(filename));
@@ -17,6 +23,15 @@ public class Util {
     return result;
   }
 
+  /**
+   * Load stop words from memory
+   * @return
+   */
+  public static Set<String> loadStopWords() {
+    String[] tokens = StopWords.stopWords.split(" ");
+    Set<String> result = new HashSet<>(Arrays.asList(tokens));
+    return result;
+  }
 
   /**
    * Function to select distinct stop words, based on analysis of 2 individual corpuses.
@@ -113,5 +128,15 @@ public class Util {
       nGrams.add(Util.join(" ", collocation.subList(i, i + n)));
     }
     return nGrams;
+  }
+
+  public static class Pair {
+    int a;
+    int b;
+
+    public Pair(int a, int b) {
+      this.a = a;
+      this.b = b;
+    }
   }
 }

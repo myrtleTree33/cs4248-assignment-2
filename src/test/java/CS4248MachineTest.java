@@ -1,6 +1,7 @@
 import org.junit.Ignore;
 import org.junit.Test;
 
+import java.util.Date;
 import java.util.Map;
 
 /**
@@ -10,22 +11,12 @@ public class CS4248MachineTest {
 
   private final String ROOT_PATH = "src/test/resources/";
 
-  class Pair {
-    int a;
-    int b;
-
-    public Pair(int a, int b) {
-      this.a = a;
-      this.b = b;
-    }
-  }
-
   @Ignore
   @Test
   public void testTrain() throws Exception {
     CS4248Machine machine = new CS4248Machine();
     machine.setParam(0.1, 0.8, 0.00000000001, LogisticRegressionClassifier.NO_TIMEOUT, 5, 30, -3, -1, 3, 2);
-    machine.train(ROOT_PATH + "adapt_adopt.train", ROOT_PATH + "stopwd.txt");
+    machine.train(ROOT_PATH + "adapt_adopt.train");
     PredictionResult.printResults(machine.test(ROOT_PATH + "adapt_adopt.test", ROOT_PATH + "adapt_adopt.answer"));
   }
 
@@ -34,14 +25,16 @@ public class CS4248MachineTest {
   public void testTrainGenerative() throws Exception {
     CS4248Machine machine = new CS4248Machine();
     int numFolds = 5;
-    int[] nGramSize = new int[]{3,4};
-    double[] learningRates = new double[]{0.05};
-    double learningDecay = 0.85;
+//    int[] nGramSize = new int[]{2,3,4};
+    int[] nGramSize = new int[]{3};
+    double[] learningRates = new double[]{0.15,0.2};
+    double learningDecay = 0.75;
     double terminationThreshold = 0.0000000001;
     long timeoutPerDimen = LogisticRegressionClassifier.NO_TIMEOUT;
     float[] learningMinThresholds = new float[]{5};
-    int[] wordDiffMinThresholds = new int[]{5,10,15,20,40};
-    Pair[] stopWordsRef = new Pair[]{
+//    int[] wordDiffMinThresholds = new int[]{5,10,15,20,40};
+    int[] wordDiffMinThresholds = new int[]{7};
+    Util.Pair[] stopWordsRef = new Util.Pair[]{
 //        new Pair(-3, -1),
 //        new Pair(-4, -2),
 //        new Pair(-5, -3),
@@ -74,15 +67,9 @@ public class CS4248MachineTest {
 //        new Pair(6, 12),
 //        new Pair(7, 13)
 
-        new Pair(-2, -1),
-        new Pair(-3, -1),
-        new Pair(-4, -1),
-        new Pair(-5, -1),
-        new Pair(-6, -1),
-        new Pair(-7, -1),
-        new Pair(-8, -1),
-        new Pair(-9, -1),
-        new Pair(-4, 4),
+//        new Pair(-2, 2),
+        new Util.Pair(-2, 2),
+//        new Pair(-4, 4),
 
     };
 
@@ -101,6 +88,7 @@ public class CS4248MachineTest {
         for (int c = 0; c < wordDiffMinThresholds.length; c++) {
           for (int d = 0; d < stopWordsRef.length; d++) {
             for (int e = 0; e < nGramSize.length; e++) {
+              long startTime = new Date().getTime();
               machine.setParam(
                   learningRates[a],
                   learningDecay,
@@ -113,14 +101,17 @@ public class CS4248MachineTest {
                   nGramSize[e],
                   numFolds
               );
-              machine.train(trainFilePath, stopWordFilePath);
+
+              machine.train(trainFilePath);
+              long timeDiff = new Date().getTime() - startTime;
               System.out.println(
                   "LearningRate=" + learningRates[a] + " " +
                       "LearningMinThresholds=" + learningMinThresholds[b] + " " +
                       "WordDiffMinThresholds=" + wordDiffMinThresholds[c] + " " +
                       "stopWordsStart=" + stopWordsRef[d].a + " " +
                       "stopWordsEnd=" + stopWordsRef[d].b + " " +
-                      "NGramSize=" + nGramSize[e]
+                      "NGramSize=" + nGramSize[e] + " " +
+                      "TimeTaken=" + timeDiff
               );
               PredictionResult.printResults(machine.test(testFilePath, testAnswerFilePath));
 

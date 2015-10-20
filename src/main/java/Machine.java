@@ -6,7 +6,7 @@ import java.util.Map;
  */
 public interface Machine {
 
-  void train(String datasetFileName, String stopWordsFileName) throws FileNotFoundException;
+  void train(String datasetFileName) throws FileNotFoundException;
 
   Map<String, PredictionResult> test(String questionFilename, String answerFilename) throws FileNotFoundException;
 }

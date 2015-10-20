@@ -1,4 +1,7 @@
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -51,14 +54,14 @@ public class CS4248Machine implements Machine {
   }
 
   @Override
-  public void train(String datasetFileName, String stopWordsFileName) throws FileNotFoundException {
+  public void train(String datasetFileName) throws FileNotFoundException {
     List<RawRecord> trainset = RawRecord.parse(datasetFileName);
     List<Record> records = new ArrayList<>();
 
     // reduce features by including relevant stop words
     Set<String> stopWords = optimizeStopWords(
         trainset,
-        Util.loadStopWords(stopWordsFileName),
+        Util.loadStopWords(),
         wordDiffMinThreshold
     );
 
@@ -72,10 +75,7 @@ public class CS4248Machine implements Machine {
     vocabulary = RawRecord.makeVocabularyList(trainset);
     collocationNGrams = RawRecord.makeCollocationsNGramsList(nGramSize, trainset, stopWordsStart, stopWordsEnd);
 
-
-    features = new ArrayList<>();
-    features.addAll(vocabulary);
-    features.addAll(collocationNGrams);
+    generateFeatures();
 
     for (RawRecord r : trainset) {
       records.add(convToRecord(r, features));
@@ -83,6 +83,20 @@ public class CS4248Machine implements Machine {
     Collections.shuffle(records); // shuffle the collection to ensure unbiased ordering
 
     model = trainNFolds(records, folds);
+  }
+
+  private void generateFeatures() {
+    features = new ArrayList<>();
+    features.addAll(vocabulary);
+    features.addAll(collocationNGrams);
+    StringBuffer sb = new StringBuffer();
+    sb.append("<features>\n");
+    for (String f : features) {
+      sb.append(f + ",");
+    }
+    sb.append("\n</features>\n");
+    sb.append("There are " + features.size() + " features.\n");
+    System.out.println(sb.toString());
   }
 
   private Model train(List<Record> records) {
@@ -228,5 +242,42 @@ public class CS4248Machine implements Machine {
     }
 
     return new Record(getLabelInt(in.getLabel()), v);
+  }
+
+  public Model getModel() {
+    return model;
+  }
+
+  public void setModel(Model model) {
+    this.model = model;
+  }
+
+  /**
+   * Writes a model to a file
+   * Format follows
+   *
+   * feature1:weight1
+   * feature2:weight2
+   * ... ...
+   *
+   * @param modelFile
+   * @throws IOException
+   */
+  public void writeToFile(String modelFile) throws IOException {
+    FileWriter fw = new FileWriter(new File(modelFile));
+    for (int i = 0; i < features.size(); i++) {
+      String f = features.get(i);
+      fw.append(f + ":" + model.getWeights().get(i) + "\n");
+    }
+    fw.close();
+  }
+
+  /**
+   * Builds model from a file.
+   * @param modelFile
+   * @throws IOException
+   */
+  public void readFromFile(String modelFile) throws IOException {
+    // TODO
   }
 }
