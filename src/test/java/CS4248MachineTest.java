@@ -34,13 +34,13 @@ public class CS4248MachineTest {
   public void testTrainGenerative() throws Exception {
     CS4248Machine machine = new CS4248Machine();
     int numFolds = 5;
-    int[] nGramSize = new int[]{7};
+    int[] nGramSize = new int[]{3,4};
     double[] learningRates = new double[]{0.05};
     double learningDecay = 0.85;
     double terminationThreshold = 0.0000000001;
     long timeoutPerDimen = LogisticRegressionClassifier.NO_TIMEOUT;
     float[] learningMinThresholds = new float[]{5};
-    int[] wordDiffMinThresholds = new int[]{20};
+    int[] wordDiffMinThresholds = new int[]{5,10,15,20,40};
     Pair[] stopWordsRef = new Pair[]{
 //        new Pair(-3, -1),
 //        new Pair(-4, -2),
@@ -74,6 +74,14 @@ public class CS4248MachineTest {
 //        new Pair(6, 12),
 //        new Pair(7, 13)
 
+        new Pair(-2, -1),
+        new Pair(-3, -1),
+        new Pair(-4, -1),
+        new Pair(-5, -1),
+        new Pair(-6, -1),
+        new Pair(-7, -1),
+        new Pair(-8, -1),
+        new Pair(-9, -1),
         new Pair(-4, 4),
 
     };
