@@ -216,7 +216,8 @@ public class CS4248Machine implements Machine {
    * @return
    */
   private Record convToRecord(RawRecord in, List<String> features) {
-    Vector v = Vector.zero(features.size() + collocationNGrams.size());
+//    Vector v = Vector.zero(features.size() + collocationNGrams.size());
+    Vector v = Vector.zero(features.size());
     // first process individual word tokens ---
     for (String token : in.getTokens()) {
       for (int i = 0; i < features.size(); i++) {
@@ -265,6 +266,7 @@ public class CS4248Machine implements Machine {
    */
   public void writeToFile(String modelFile) throws IOException {
     FileWriter fw = new FileWriter(new File(modelFile));
+    fw.append(mappings.get(0) + " " + mappings.get(1) + "\n");
     for (int i = 0; i < features.size(); i++) {
       String f = features.get(i);
       fw.append(f + ":" + model.getWeights().get(i) + "\n");
@@ -278,6 +280,30 @@ public class CS4248Machine implements Machine {
    * @throws IOException
    */
   public void readFromFile(String modelFile) throws IOException {
-    // TODO
+    features = new ArrayList<>(8000); // allocate at least 8000 so no need to recopy
+    List<Double> weights = new ArrayList<>(8000);
+    Scanner scanner = new Scanner(new File(modelFile));
+
+    // generate labels
+    makeMapLabels(scanner.nextLine().split(" "));
+
+    while(scanner.hasNext()) {
+      String[] tokens = scanner.nextLine().split(":");
+      if (tokens.length == 2) {
+        features.add(tokens[0]);
+        weights.add(Double.valueOf(tokens[1]));
+      }
+    }
+    Vector weightsV = Vector.zero(features.size());
+    for (int i = 0; i < weights.size(); i++) {
+      weightsV.set(i, weights.get(i));
+    }
+    model = new Model(weightsV);
+  }
+
+  public void makeMapLabels(String[] labels) {
+    mappings = new ArrayList<>();
+    mappings.add(labels[0]);
+    mappings.add(labels[1]);
   }
 }

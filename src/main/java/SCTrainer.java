@@ -1,4 +1,5 @@
 import java.io.FileNotFoundException;
+import java.io.IOException;
 
 /**
  * Created by joel on 10/20/15.
@@ -48,8 +49,10 @@ public class SCTrainer {
 
   public void train() throws FileNotFoundException {
     machine.train(trainFile);
-    Model model = machine.getModel();
-    model.writeToFile(modelFile);
+  }
+
+  public void write() throws IOException {
+    machine.writeToFile(modelFile);
   }
 
 }

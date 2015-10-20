@@ -20,14 +20,14 @@ public class CS4248MachineTest {
     PredictionResult.printResults(machine.test(ROOT_PATH + "adapt_adopt.test", ROOT_PATH + "adapt_adopt.answer"));
   }
 
-  //  @Ignore
+  @Ignore
   @Test
   public void testTrainGenerative() throws Exception {
     CS4248Machine machine = new CS4248Machine();
     int numFolds = 5;
 //    int[] nGramSize = new int[]{2,3,4};
     int[] nGramSize = new int[]{3};
-    double[] learningRates = new double[]{0.15,0.2};
+    double[] learningRates = new double[]{0.15, 0.2};
     double learningDecay = 0.75;
     double terminationThreshold = 0.0000000001;
     long timeoutPerDimen = LogisticRegressionClassifier.NO_TIMEOUT;
