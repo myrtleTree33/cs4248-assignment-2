@@ -20,20 +20,21 @@ public class CS4248MachineTest {
     PredictionResult.printResults(machine.test(ROOT_PATH + "adapt_adopt.test", ROOT_PATH + "adapt_adopt.answer"));
   }
 
-  @Ignore
+  //  @Ignore
   @Test
   public void testTrainGenerative() throws Exception {
     CS4248Machine machine = new CS4248Machine();
-    int numFolds = 5;
+    int numFolds = 3;
 //    int[] nGramSize = new int[]{2,3,4};
     int[] nGramSize = new int[]{3};
-    double[] learningRates = new double[]{0.15, 0.2};
-    double learningDecay = 0.75;
-    double terminationThreshold = 0.0000000001;
+    double[] learningRates = new double[]{2};
+//    double[] learningDecay = new double[]{0.75};
+    double[] learningDecay = new double[]{0.75};
+    double[] terminationThreshold = new double[]{0.0000000001};
     long timeoutPerDimen = LogisticRegressionClassifier.NO_TIMEOUT;
-    float[] learningMinThresholds = new float[]{5};
+    float[] learningMinThresholds = new float[]{2};
 //    int[] wordDiffMinThresholds = new int[]{5,10,15,20,40};
-    int[] wordDiffMinThresholds = new int[]{7};
+    int[] wordDiffMinThresholds = new int[]{20};
     Util.Pair[] stopWordsRef = new Util.Pair[]{
 //        new Pair(-3, -1),
 //        new Pair(-4, -2),
@@ -68,7 +69,11 @@ public class CS4248MachineTest {
 //        new Pair(7, 13)
 
 //        new Pair(-2, 2),
-        new Util.Pair(-2, 2),
+        new Util.Pair(-3, 3),
+//        new Util.Pair(-5, 5),
+//        new Util.Pair(-6, 6),
+//        new Util.Pair(-7, 7),
+//        new Util.Pair(-10, 10),
 //        new Pair(-4, 4),
 
     };
@@ -83,62 +88,47 @@ public class CS4248MachineTest {
     String testFilePath = ROOT_PATH + "bought_brought.test";
     String testAnswerFilePath = ROOT_PATH + "bought_brought.answer";
 
-    for (int a = 0; a < learningRates.length; a++) {
-      for (int b = 0; b < learningMinThresholds.length; b++) {
-        for (int c = 0; c < wordDiffMinThresholds.length; c++) {
-          for (int d = 0; d < stopWordsRef.length; d++) {
-            for (int e = 0; e < nGramSize.length; e++) {
-              long startTime = new Date().getTime();
-              machine.setParam(
-                  learningRates[a],
-                  learningDecay,
-                  terminationThreshold,
-                  timeoutPerDimen,
-                  learningMinThresholds[b],
-                  wordDiffMinThresholds[c],
-                  stopWordsRef[d].a,
-                  stopWordsRef[d].b,
-                  nGramSize[e],
-                  numFolds
-              );
+    for (int b = 0; b < learningMinThresholds.length; b++) {
+      for (int c = 0; c < wordDiffMinThresholds.length; c++) {
+        for (int d = 0; d < stopWordsRef.length; d++) {
+          for (int e = 0; e < nGramSize.length; e++) {
+            for (int g = 0; g < terminationThreshold.length; g++) {
+              for (int f = 0; f < learningDecay.length; f++) {
+                for (int a = 0; a < learningRates.length; a++) {
+                  long startTime = new Date().getTime();
+                  machine.setParam(
+                      learningRates[a],
+                      learningDecay[f],
+                      terminationThreshold[g],
+                      timeoutPerDimen,
+                      learningMinThresholds[b],
+                      wordDiffMinThresholds[c],
+                      stopWordsRef[d].a,
+                      stopWordsRef[d].b,
+                      nGramSize[e],
+                      numFolds
+                  );
 
-              machine.train(trainFilePath);
-              long timeDiff = new Date().getTime() - startTime;
-              System.out.println(
-                  "LearningRate=" + learningRates[a] + " " +
-                      "LearningMinThresholds=" + learningMinThresholds[b] + " " +
-                      "WordDiffMinThresholds=" + wordDiffMinThresholds[c] + " " +
-                      "stopWordsStart=" + stopWordsRef[d].a + " " +
-                      "stopWordsEnd=" + stopWordsRef[d].b + " " +
-                      "NGramSize=" + nGramSize[e] + " " +
-                      "TimeTaken=" + timeDiff
-              );
-              PredictionResult.printResults(machine.test(testFilePath, testAnswerFilePath));
+                  machine.train(trainFilePath);
+                  long timeDiff = new Date().getTime() - startTime;
+                  System.out.println(
+                      "LearningRate=" + learningRates[a] + " " +
+                          "LearningMinThresholds=" + learningMinThresholds[b] + " " +
+                          "WordDiffMinThresholds=" + wordDiffMinThresholds[c] + " " +
+                          "stopWordsStart=" + stopWordsRef[d].a + " " +
+                          "stopWordsEnd=" + stopWordsRef[d].b + " " +
+                          "NGramSize=" + nGramSize[e] + " " +
+                          "TimeTaken=" + timeDiff
+                  );
+                  PredictionResult.printResults(machine.test(testFilePath, testAnswerFilePath));
 
+                }
+              }
             }
           }
         }
       }
     }
   }
-
-  // TODO remove from code
-  @Deprecated
-  private StringBuffer printCsv(double learningRate,
-                                int wordDiffThreshold,
-                                int collocationStart,
-                                int collocationEnd,
-                                Map<String,
-                                    PredictionResult> result) {
-    StringBuffer sb = new StringBuffer();
-    sb.append(learningRate + ",")
-        .append(wordDiffThreshold + ",")
-        .append(collocationStart + ",")
-        .append(collocationEnd + ",");
-
-    return sb;
-
-  }
-
 
 }

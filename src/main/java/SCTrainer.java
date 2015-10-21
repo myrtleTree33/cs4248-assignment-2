@@ -21,15 +21,26 @@ public class SCTrainer {
   }
 
   private void init() {
+
     int numFolds = 5;
     int nGramSize = 3;
-    double learningRate = 0.15;
+    double learningRate = 2;
     double learningDecay = 0.75;
     double terminationThreshold = 0.0000000001;
     long timeoutPerDimen = LogisticRegressionClassifier.NO_TIMEOUT;
     float learningMinThreshold = 5;
     int wordDiffMinThreshold = 7;
-    Util.Pair stopWordsRef = new Util.Pair(-2,2);
+    Util.Pair stopWordsRef = new Util.Pair(-7,2);
+
+//    int numFolds = 5;
+//    int nGramSize = 3;
+//    double learningRate = 0.15;
+//    double learningDecay = 0.75;
+//    double terminationThreshold = 0.0000000001;
+//    long timeoutPerDimen = LogisticRegressionClassifier.NO_TIMEOUT;
+//    float learningMinThreshold = 5;
+//    int wordDiffMinThreshold = 7;
+//    Util.Pair stopWordsRef = new Util.Pair(-2,2);
 
     machine = new CS4248Machine();
     machine.setParam(

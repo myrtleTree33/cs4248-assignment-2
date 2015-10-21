@@ -103,6 +103,14 @@ public class Vector {
     return init(size, 0);
   }
 
+  public static Vector randSeed(int min, int max, int size) {
+    Vector v = init(size, 0);
+    for (int i = 0; i < v.size(); i++) {
+      v.set(i, min + Math.random() * (max - min));
+    }
+    return v;
+  }
+
   /**
    * Adds another vector.
    *

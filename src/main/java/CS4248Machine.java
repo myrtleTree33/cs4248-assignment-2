@@ -105,6 +105,12 @@ public class CS4248Machine implements Machine {
     return model;
   }
 
+  private Model train(List<Record> records, Vector initialWeights) {
+    classifier.loadDataset(records);
+    Model model = classifier.train(initialWeights, learningMinThreshold, learningRate, learningDecay, terminationThreshold, timeoutPerDimen);
+    return model;
+  }
+
   private Model trainNFolds(List<Record> records, int nFolds) {
     Model bestModel = null;
     double bestAccuracy = 0d;
@@ -128,6 +134,9 @@ public class CS4248Machine implements Machine {
       }
     }
     System.out.println("Using model with accuracy " + bestAccuracy);
+    // then further train best model on all samples
+    System.out.println("Training with all weights..");
+    bestModel = train(records, bestModel.getWeights());
     return bestModel;
   }
 
@@ -256,7 +265,7 @@ public class CS4248Machine implements Machine {
   /**
    * Writes a model to a file
    * Format follows
-   *
+   * <p/>
    * feature1:weight1
    * feature2:weight2
    * ... ...
@@ -276,6 +285,7 @@ public class CS4248Machine implements Machine {
 
   /**
    * Builds model from a file.
+   *
    * @param modelFile
    * @throws IOException
    */
@@ -287,7 +297,7 @@ public class CS4248Machine implements Machine {
     // generate labels
     makeMapLabels(scanner.nextLine().split(" "));
 
-    while(scanner.hasNext()) {
+    while (scanner.hasNext()) {
       String[] tokens = scanner.nextLine().split(":");
       if (tokens.length == 2) {
         features.add(tokens[0]);

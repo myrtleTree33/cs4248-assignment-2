@@ -49,8 +49,12 @@ public class LogisticRegressionClassifier implements Classifier {
   }
 
   public Model train() {
-    // init weights to zero
     Vector weights = Vector.zero(getDimen());
+    return train(weights);
+  }
+
+  public Model train(Vector weights) {
+    // init weights to zero
 
     // use stochastic GA
     trainWeightStochastic(records, weights, alpha, learningDecay, terminationThreshold, timeoutPerDimen);
@@ -90,6 +94,15 @@ public class LogisticRegressionClassifier implements Classifier {
     this.terminationThreshold = terminationThreshold;
     this.timeoutPerDimen = timeoutPerDimen;
     return train();
+  }
+
+  public Model train(Vector initialWeights, float minThreshold, double alpha, double learningDecay, double terminationThreshold, long timeoutPerDimen) {
+    this.minThreshold = minThreshold;
+    this.alpha = alpha;
+    this.learningDecay = learningDecay;
+    this.terminationThreshold = terminationThreshold;
+    this.timeoutPerDimen = timeoutPerDimen;
+    return train(initialWeights);
   }
 
   public double test() {

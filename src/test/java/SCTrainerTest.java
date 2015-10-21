@@ -18,7 +18,7 @@ public class SCTrainerTest {
         "adapt",
         "adopt",
         ROOT_PATH + "adapt_adopt.train",
-        ROOT_PATH + "testOutput-test.model");
+        ROOT_PATH + "testOutput-test.model.backup");
     scTrainer.train();
     scTrainer.write();
   }

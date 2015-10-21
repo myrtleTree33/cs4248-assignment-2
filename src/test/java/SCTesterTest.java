@@ -3,12 +3,10 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
-
 /**
  * Created by joel on 10/21/15.
  */
-//@Ignore
+@Ignore
 public class SCTesterTest {
 
   private final String ROOT_PATH = "src/test/resources/";
@@ -29,7 +27,7 @@ public class SCTesterTest {
     scTester = new SCTester(
         ROOT_PATH + "adapt_adopt.test",
         ROOT_PATH + "adapt_adopt.answer",
-        ROOT_PATH + "testOutput-test.model"
+        ROOT_PATH + "testOutput-test.model.backup"
     );
     scTester.runTest();
   }
