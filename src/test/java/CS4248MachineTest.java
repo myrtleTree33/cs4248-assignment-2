@@ -2,7 +2,6 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Date;
-import java.util.Map;
 
 /**
  * Created by joel on 10/14/15.
@@ -14,10 +13,10 @@ public class CS4248MachineTest {
   @Ignore
   @Test
   public void testTrain() throws Exception {
-    CS4248Machine machine = new CS4248Machine();
-    machine.setParam(0.1, 0.8, 0.00000000001, LogisticRegressionClassifier.NO_TIMEOUT, 5, 30, -3, -1, 3, 2);
+    App.CS4248Machine machine = new App.CS4248Machine();
+    machine.setParam(0.1, 0.8, 0.00000000001, App.LogisticRegressionClassifier.NO_TIMEOUT, 5, 30, -3, -1, 3, 2);
     machine.train(ROOT_PATH + "adapt_adopt.train");
-    PredictionResult.printResults(machine.test(ROOT_PATH + "adapt_adopt.test", ROOT_PATH + "adapt_adopt.answer"));
+    App.PredictionResult.printResults(machine.test(ROOT_PATH + "adapt_adopt.test", ROOT_PATH + "adapt_adopt.answer"));
   }
 
   //  @Ignore
@@ -36,7 +35,7 @@ public class CS4248MachineTest {
       }
     }
 
-    CS4248Machine machine = new CS4248Machine();
+    App.CS4248Machine machine = new App.CS4248Machine();
     int numFolds = 3;
 //    int[] nGramSize = new int[]{2,3,4};
     int[] nGramSize = new int[]{3};
@@ -44,11 +43,11 @@ public class CS4248MachineTest {
 //    double[] learningDecay = new double[]{0.75};
     double[] learningDecay = new double[]{0.75};
     double[] terminationThreshold = new double[]{0.0000000001};
-    long timeoutPerDimen = LogisticRegressionClassifier.NO_TIMEOUT;
+    long timeoutPerDimen = App.LogisticRegressionClassifier.NO_TIMEOUT;
     float[] learningMinThresholds = new float[]{2};
 //    int[] wordDiffMinThresholds = new int[]{5,10,15,20,40};
     int[] wordDiffMinThresholds = new int[]{20};
-    Util.Pair[] stopWordsRef = new Util.Pair[]{
+    App.Util.Pair[] stopWordsRef = new App.Util.Pair[]{
 //        new Pair(-3, -1),
 //        new Pair(-4, -2),
 //        new Pair(-5, -3),
@@ -82,11 +81,11 @@ public class CS4248MachineTest {
 //        new Pair(7, 13)
 
 //        new Pair(-2, 2),
-        new Util.Pair(-3, 3),
-//        new Util.Pair(-5, 5),
-//        new Util.Pair(-6, 6),
-//        new Util.Pair(-7, 7),
-//        new Util.Pair(-10, 10),
+        new App.Util.Pair(-3, 3),
+//        new App.Util.Pair(-5, 5),
+//        new App.Util.Pair(-6, 6),
+//        new App.Util.Pair(-7, 7),
+//        new App.Util.Pair(-10, 10),
 //        new Pair(-4, 4),
 
     };
@@ -154,7 +153,7 @@ public class CS4248MachineTest {
                             "NGramSize=" + nGramSize[e] + " " +
                             "TimeTaken=" + (timeDiff / 1000) + "s"
                     );
-                    PredictionResult.printResults(machine.test(testFilePath, testAnswerFilePath));
+                    App.PredictionResult.printResults(machine.test(testFilePath, testAnswerFilePath));
 
                   }
                 }

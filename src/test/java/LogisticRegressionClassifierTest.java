@@ -12,18 +12,18 @@ import static org.junit.Assert.*;
  */
 public class LogisticRegressionClassifierTest {
 
-  List<Record> dataset;
-  LogisticRegressionClassifier classifier;
+  List<App.Record> dataset;
+  App.LogisticRegressionClassifier classifier;
 
   @Before
   public void setUp() throws Exception {
     dataset = new ArrayList<>();
-    dataset.add(new Record(1, new Vector(new double[]{0.9, 0.9, 0.1})));
-    dataset.add(new Record(1, new Vector(new double[]{0.8, 0.8, 0.2})));
-    dataset.add(new Record(0, new Vector(new double[]{0.1, 0.1, 0.9})));
-    dataset.add(new Record(0, new Vector(new double[]{0.15, 0.12, 0.85})));
+    dataset.add(new App.Record(1, new App.Vector(new double[]{0.9, 0.9, 0.1})));
+    dataset.add(new App.Record(1, new App.Vector(new double[]{0.8, 0.8, 0.2})));
+    dataset.add(new App.Record(0, new App.Vector(new double[]{0.1, 0.1, 0.9})));
+    dataset.add(new App.Record(0, new App.Vector(new double[]{0.15, 0.12, 0.85})));
 
-    classifier = new LogisticRegressionClassifier();
+    classifier = new App.LogisticRegressionClassifier();
   }
 
   @After
@@ -34,15 +34,15 @@ public class LogisticRegressionClassifierTest {
   @Test
   public void testTrain() throws Exception {
     classifier.loadDataset(dataset);
-    Model model = classifier.train(5, 2, 0.8, 0.00000000001, LogisticRegressionClassifier.NO_TIMEOUT);
+    App.Model model = classifier.train(5, 2, 0.8, 0.00000000001, App.LogisticRegressionClassifier.NO_TIMEOUT);
     for (int i = 0; i < dataset.size(); i++) {
       System.out.print("Label=" + dataset.get(i).getLabel() + " ");
       System.out.println(model.evaluate(dataset.get(i).getVectors()) + "");
     }
 
     // assert following labels are classified correctly
-    assertEquals(1, model.evaluate(new Vector(new double[]{0.9, 0.8, 0.1})));
-    assertEquals(0, model.evaluate(new Vector(new double[]{0.1, 0.3, 0.8})));
+    assertEquals(1, model.evaluate(new App.Vector(new double[]{0.9, 0.8, 0.1})));
+    assertEquals(0, model.evaluate(new App.Vector(new double[]{0.1, 0.3, 0.8})));
 
   }
 }

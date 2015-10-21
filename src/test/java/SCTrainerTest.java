@@ -10,11 +10,11 @@ import org.junit.Test;
 public class SCTrainerTest {
 
   private final String ROOT_PATH = "src/test/resources/";
-  private SCTrainer scTrainer;
+  private App.SCTrainer scTrainer;
 
   @Test
   public void testTrain() throws Exception {
-    scTrainer = new SCTrainer(
+    scTrainer = new App.SCTrainer(
         "adapt",
         "adopt",
         ROOT_PATH + "adapt_adopt.train",

@@ -10,7 +10,7 @@ import org.junit.Test;
 public class SCTesterTest {
 
   private final String ROOT_PATH = "src/test/resources/";
-  private SCTester scTester;
+  private App.SCTester scTester;
 
   @Before
   public void setUp() throws Exception {
@@ -24,7 +24,7 @@ public class SCTesterTest {
 
   @Test
   public void testRunTest() throws Exception {
-    scTester = new SCTester(
+    scTester = new App.SCTester(
         ROOT_PATH + "adapt_adopt.test",
         ROOT_PATH + "adapt_adopt.answer",
         ROOT_PATH + "testOutput-test.model.backup"

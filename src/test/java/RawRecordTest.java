@@ -11,11 +11,11 @@ import java.util.*;
 public class RawRecordTest {
 
   private final String ROOT_PATH = "src/test/resources/";
-  private List<RawRecord> records;
+  private List<App.RawRecord> records;
 
   @Before
   public void setUp() throws Exception {
-    records = RawRecord.parse(ROOT_PATH + "adapt_adopt.train");
+    records = App.RawRecord.parse(ROOT_PATH + "adapt_adopt.train");
 
   }
 
@@ -27,7 +27,7 @@ public class RawRecordTest {
   @Ignore
   @Test
   public void testParse() throws Exception {
-    RawRecord.print(records);
+    App.RawRecord.print(records);
   }
 
   @Ignore
@@ -35,25 +35,25 @@ public class RawRecordTest {
   public void testRemoveStopWords() throws Exception {
     Set<String> stopWords = new HashSet<>();
     stopWords.add("the");
-    RawRecord.removeTokens(records, stopWords);
-    RawRecord.print(records);
+    App.RawRecord.removeTokens(records, stopWords);
+    App.RawRecord.print(records);
   }
 
   @Ignore
   @Test
   public void testRemoveStopWordsFromFile() throws Exception {
-    Set<String> stopWords = Util.loadStopWords(ROOT_PATH + "stopwd.txt");
-    RawRecord.removeTokens(records, stopWords);
-    RawRecord.removePunctuation(records);
-    RawRecord.print(records);
+    Set<String> stopWords = App.Util.loadStopWords(ROOT_PATH + "stopwd.txt");
+    App.RawRecord.removeTokens(records, stopWords);
+    App.RawRecord.removePunctuation(records);
+    App.RawRecord.print(records);
   }
 
   @Ignore
   @Test
   public void testMakeVocabulary() throws Exception {
-    RawRecord.removePunctuation(records);
-    List<RawRecord> recordsA = RawRecord.splice(records, "adapt");
-    HashMap<String, Integer> vocabulary = RawRecord.makeVocabulary(recordsA);
+    App.RawRecord.removePunctuation(records);
+    List<App.RawRecord> recordsA = App.RawRecord.splice(records, "adapt");
+    HashMap<String, Integer> vocabulary = App.RawRecord.makeVocabulary(recordsA);
     System.out.println("Size=" + vocabulary.size());
     StringBuffer sb = new StringBuffer();
     Iterator it = vocabulary.entrySet().iterator();
@@ -67,14 +67,14 @@ public class RawRecordTest {
   @Ignore
   @Test
   public void testParseAnswers() throws Exception {
-    records = RawRecord.parse(ROOT_PATH + "adapt_adopt.test", ROOT_PATH + "adapt_adopt.answer");
-    RawRecord.print(records);
+    records = App.RawRecord.parse(ROOT_PATH + "adapt_adopt.test", ROOT_PATH + "adapt_adopt.answer");
+    App.RawRecord.print(records);
   }
 
   @Ignore
   @Test
   public void testGetAllCollocations() throws Exception {
-    Set<String> collocationsNGram = RawRecord.getAllCollocationsAsNGram(3, records, -2, 2);
+    Set<String> collocationsNGram = App.RawRecord.getAllCollocationsAsNGram(3, records, -2, 2);
     for (String collocation : collocationsNGram) {
       System.out.println(collocation);
     }
