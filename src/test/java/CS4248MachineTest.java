@@ -39,10 +39,13 @@ public class CS4248MachineTest {
     int numFolds = 3;
 //    int[] nGramSize = new int[]{2,3,4};
     int[] nGramSize = new int[]{3};
-    double[] learningRates = new double[]{2};
+    double[] learningRates = new double[]{2, 1.7, 1.5, 1.2, 1.1};
 //    double[] learningDecay = new double[]{0.75};
     double[] learningDecay = new double[]{0.75};
-    double[] terminationThreshold = new double[]{0.0000000001};
+    double[] terminationThreshold = new double[]{
+        0.0000000001,
+        0.000000000001
+    };
     long timeoutPerDimen = App.LogisticRegressionClassifier.NO_TIMEOUT;
     float[] learningMinThresholds = new float[]{2};
 //    int[] wordDiffMinThresholds = new int[]{5,10,15,20,40};
