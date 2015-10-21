@@ -23,6 +23,19 @@ public class CS4248MachineTest {
   //  @Ignore
   @Test
   public void testTrainGenerative() throws Exception {
+
+    class Dataset {
+      public String trainFilepath;
+      public String testFilepath;
+      public String answerFilepath;
+
+      public Dataset(String trainFilepath, String testFilepath, String answerFilepath) {
+        this.trainFilepath = trainFilepath;
+        this.testFilepath = testFilepath;
+        this.answerFilepath = answerFilepath;
+      }
+    }
+
     CS4248Machine machine = new CS4248Machine();
     int numFolds = 3;
 //    int[] nGramSize = new int[]{2,3,4};
@@ -78,50 +91,72 @@ public class CS4248MachineTest {
 
     };
 
+    Dataset[] datasets = new Dataset[]{
+        new Dataset(
+            "bought_brought.train",
+            "bought_brought.test",
+            "bought_brought.answer"
+        ),
+        new Dataset(
+            "adapt_adopt.train",
+            "adapt_adopt.test",
+            "adapt_adopt.answer"
+        ),
+        new Dataset(
+            "peace_piece.train",
+            "peace_piece.test",
+            "peace_piece.answer"
+        )
+    };
+
 //    String trainFilePath = ROOT_PATH + "adapt_adopt.train";
 //    String stopWordFilePath = ROOT_PATH + "stopwd.txt";
 //    String testFilePath = ROOT_PATH + "adapt_adopt.test";
 //    String testAnswerFilePath = ROOT_PATH + "adapt_adopt.answer";
 
-    String trainFilePath = ROOT_PATH + "bought_brought.train";
-    String stopWordFilePath = ROOT_PATH + "stopwd.txt";
-    String testFilePath = ROOT_PATH + "bought_brought.test";
-    String testAnswerFilePath = ROOT_PATH + "bought_brought.answer";
+    for (int h = 0; h < datasets.length; h++) {
+      for (int b = 0; b < learningMinThresholds.length; b++) {
+        for (int c = 0; c < wordDiffMinThresholds.length; c++) {
+          for (int d = 0; d < stopWordsRef.length; d++) {
+            for (int e = 0; e < nGramSize.length; e++) {
+              for (int g = 0; g < terminationThreshold.length; g++) {
+                for (int f = 0; f < learningDecay.length; f++) {
+                  for (int a = 0; a < learningRates.length; a++) {
 
-    for (int b = 0; b < learningMinThresholds.length; b++) {
-      for (int c = 0; c < wordDiffMinThresholds.length; c++) {
-        for (int d = 0; d < stopWordsRef.length; d++) {
-          for (int e = 0; e < nGramSize.length; e++) {
-            for (int g = 0; g < terminationThreshold.length; g++) {
-              for (int f = 0; f < learningDecay.length; f++) {
-                for (int a = 0; a < learningRates.length; a++) {
-                  long startTime = new Date().getTime();
-                  machine.setParam(
-                      learningRates[a],
-                      learningDecay[f],
-                      terminationThreshold[g],
-                      timeoutPerDimen,
-                      learningMinThresholds[b],
-                      wordDiffMinThresholds[c],
-                      stopWordsRef[d].a,
-                      stopWordsRef[d].b,
-                      nGramSize[e],
-                      numFolds
-                  );
+                    String trainFilePath = ROOT_PATH + datasets[h].trainFilepath;
+                    String testFilePath = ROOT_PATH + datasets[h].testFilepath;
+                    String testAnswerFilePath = ROOT_PATH + datasets[h].answerFilepath;
 
-                  machine.train(trainFilePath);
-                  long timeDiff = new Date().getTime() - startTime;
-                  System.out.println(
-                      "LearningRate=" + learningRates[a] + " " +
-                          "LearningMinThresholds=" + learningMinThresholds[b] + " " +
-                          "WordDiffMinThresholds=" + wordDiffMinThresholds[c] + " " +
-                          "stopWordsStart=" + stopWordsRef[d].a + " " +
-                          "stopWordsEnd=" + stopWordsRef[d].b + " " +
-                          "NGramSize=" + nGramSize[e] + " " +
-                          "TimeTaken=" + timeDiff
-                  );
-                  PredictionResult.printResults(machine.test(testFilePath, testAnswerFilePath));
 
+                    long startTime = new Date().getTime();
+                    machine.setParam(
+                        learningRates[a],
+                        learningDecay[f],
+                        terminationThreshold[g],
+                        timeoutPerDimen,
+                        learningMinThresholds[b],
+                        wordDiffMinThresholds[c],
+                        stopWordsRef[d].a,
+                        stopWordsRef[d].b,
+                        nGramSize[e],
+                        numFolds
+                    );
+
+                    machine.train(trainFilePath);
+                    long timeDiff = new Date().getTime() - startTime;
+                    System.out.println(
+                        "Filename=" + trainFilePath + " " +
+                        "LearningRate=" + learningRates[a] + " " +
+                            "LearningMinThresholds=" + learningMinThresholds[b] + " " +
+                            "WordDiffMinThresholds=" + wordDiffMinThresholds[c] + " " +
+                            "stopWordsStart=" + stopWordsRef[d].a + " " +
+                            "stopWordsEnd=" + stopWordsRef[d].b + " " +
+                            "NGramSize=" + nGramSize[e] + " " +
+                            "TimeTaken=" + (timeDiff / 1000) + "s"
+                    );
+                    PredictionResult.printResults(machine.test(testFilePath, testAnswerFilePath));
+
+                  }
                 }
               }
             }
