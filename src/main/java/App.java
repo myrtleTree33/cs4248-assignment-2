@@ -2,6 +2,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.*;
 
 /**
@@ -386,6 +387,7 @@ public class App {
       fw.append(mappings.get(0) + " " + mappings.get(1) + "\n");
       for (int i = 0; i < features.size(); i++) {
         String f = features.get(i);
+        BigDecimal weightPrecise = BigDecimal.valueOf(model.getWeights().get(i));
         fw.append(f + ":" + model.getWeights().get(i) + "\n");
       }
       fw.close();
