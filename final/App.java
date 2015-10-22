@@ -480,38 +480,7 @@ public class App {
 
       // use stochastic GA
       trainWeightStochastic(records, weights, alpha, learningDecay, terminationThreshold, timeoutPerDimen);
-//      trainWeightBatch(records, weights, alpha, learningDecay, terminationThreshold, timeoutPerDimen);
       return new Model(weights);
-    }
-
-    private void trainWeightBatch(List<Record> records,
-                                  Vector existingWeights,
-                                  double alpha,
-                                  double learningDecay,
-                                  double terminationThreshold,
-                                  long timeoutPerDimen) {
-      //    long startTime = new Date().getTime();
-      // for each weight
-      for (int i = 0; i < getDimen(); i++) {
-        double diff = 999;
-        double currAlpha = alpha;
-        while (diff > terminationThreshold) {
-          //        boolean hasTimeout = ((new Date().getTime() - startTime) < timeoutPerDimen || timeoutPerDimen != NO_TIMEOUT)
-          currAlpha *= learningDecay;
-          double newWeight = existingWeights.get(i) + currAlpha / records.size() * batchSum(i, records, existingWeights);
-          diff = Math.abs(newWeight - existingWeights.get(i));
-          existingWeights.set(i, newWeight);
-        }
-      }
-      System.out.println("Exited!");
-    }
-
-    private double batchSum(int currIdx, List<Record> records, Vector existingWeights) {
-      double sum = 0;
-      for (Record r : records) {
-        sum += r.getVectors().get(currIdx) * (r.getLabel() - (r.getLabel() - 1 / (1 + Math.exp(-1 * existingWeights.dot(r.getVectors())))));
-      }
-      return sum;
     }
 
     private void trainWeightStochastic(List<Record> records,
@@ -1051,6 +1020,7 @@ public class App {
     }
 
     public void runTest() throws FileNotFoundException {
+      System.out.println("boo");
       PredictionResult.printResults(machine.test(testFile, answerFile));
     }
 
@@ -1076,15 +1046,15 @@ public class App {
     }
 
     private void init() {
-      int featureCountMin = 4; // each feature must appear more than or equal to n times in corpus
+      int featureCountMin = 4; // each feature must appear more than or equal to 4 times in corpus
       int numFolds = 3;        // number of folds used
       int nGramSize = 3;       // size of Ngram chunks in collocation
-      double learningRate = 1.5;  // learning rate
-      double learningDecay = 0.75; // decay coefficient for learning rate
-      double terminationThreshold = 0.000000001; // how similar should weights be before termination
+      double learningRate = 1.8;  // learning rate
+      double learningDecay = 0.8; // decay coefficient for learning rate
+      double terminationThreshold = 0.0000000001; // how similar should weights be before termination
       long timeoutPerDimen = LogisticRegressionClassifier.NO_TIMEOUT; // do not wait for timeout
-      float learningMinThreshold = 2; // deprecated DO NOT USE
-      int wordDiffMinThreshold = 10; // Remove stop words that appear less than this threshold, between labels
+      float learningMinThreshold = 5; // deprecated DO NOT USE
+      int wordDiffMinThreshold = 4; // Remove stop words that appear more than this threshold, between labels
       Util.Pair stopWordsRef = new Util.Pair(-4, 4); // the collocation to use
 
       machine = new CS4248Machine();

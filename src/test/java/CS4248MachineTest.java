@@ -21,7 +21,7 @@ public class CS4248MachineTest {
     App.PredictionResult.printResults(machine.test(ROOT_PATH + "adapt_adopt.test", ROOT_PATH + "adapt_adopt.answer"));
   }
 
-  //  @Ignore
+//    @Ignore
   @Test
   public void testTrainGenerative() throws Exception {
 
@@ -38,25 +38,23 @@ public class CS4248MachineTest {
     }
 
     App.CS4248Machine machine = new App.CS4248Machine();
-//    int[] featureCountMin = new int[]{2, 3, 4};
-    int[] featureCountMin = new int[]{4}; // 4 is best
+    int[] featureCountMin = new int[]{3,4}; // 4 is best
     int numFolds[] = new int[]{3};
-//    int[] nGramSize = new int[]{2,3,4};
-    int[] nGramSize = new int[]{3};
+    int[] nGramSize = new int[]{3,7};
 //    double[] learningRates = new double[]{1.5};
-    double[] learningRates = new double[]{1.8};
+    double[] learningRates = new double[]{1.8, 10};
     double[] learningDecay = new double[]{.8};
     double[] terminationThreshold = new double[]{
 //        0.0000001,
-//        0.00000001,
+        0.00000001,
 //        0.000000001,
-        0.0000000001, // best
+//        0.0000000001, // best
 //        0.00000000001,
     };
     long timeoutPerDimen = App.LogisticRegressionClassifier.NO_TIMEOUT;
     float[] learningMinThresholds = new float[]{2};// deprecated
 //    int[] wordDiffMinThresholds = new int[]{5,10,15,20,40};
-    int[] wordDiffMinThresholds = new int[]{5,10,20};
+    int[] wordDiffMinThresholds = new int[]{5,20};
     App.Util.Pair[] stopWordsRef = new App.Util.Pair[]{
 //        new Pair(-3, -1),
 //        new Pair(-4, -2),
@@ -94,7 +92,7 @@ public class CS4248MachineTest {
 //        new App.Util.Pair(-3, 3), // best
 //        new App.Util.Pair(-5, 5),
 //        new App.Util.Pair(-6, 6),
-//        new App.Util.Pair(-7, 7),
+        new App.Util.Pair(-10, 10),
         new App.Util.Pair(-4, 4),
 //        new Pair(-4, 4),
 

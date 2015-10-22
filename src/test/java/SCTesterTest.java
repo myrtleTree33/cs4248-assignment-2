@@ -27,7 +27,7 @@ public class SCTesterTest {
     scTester = new App.SCTester(
         ROOT_PATH + "adapt_adopt.test",
         ROOT_PATH + "adapt_adopt.answer",
-        ROOT_PATH + "testOutput-test.model.backup"
+        ROOT_PATH + "testOutput-test.model.backup3"
     );
     scTester.runTest();
   }
