@@ -9,9 +9,47 @@ import java.util.*;
  */
 public class App {
 
-  public static void main(String[] args) {
+  public static final int APP_TRAIN = 0;
+  public static final int APP_TEST = 1;
 
+  // sets the app to be a trainer or a tester
+  public static final int APP_TYPE = APP_TRAIN;
+
+  /**
+   * The main entry point is here!
+   *
+   * @param args
+   */
+  public static void main(String[] args) throws IOException {
+    if (args.length < 2) {
+      throw new IllegalArgumentException("Wrong number of arguments!");
+    }
+    String word1 = args[0];
+    String word2 = args[1];
+    if (APP_TYPE == APP_TRAIN) {
+      if (args.length < 4) {
+        throw new IllegalArgumentException("Wrong number of arguments!");
+      }
+      String trainFile = args[2];
+      String modelFile = args[3];
+      SCTrainer scTrainer = new SCTrainer(word1, word2, trainFile, modelFile);
+      scTrainer.train();
+      scTrainer.write();
+
+    } else if (APP_TYPE == APP_TEST) {
+      if (args.length < 5) {
+        throw new IllegalArgumentException("Wrong number of arguments!");
+      }
+      String testFile = args[2];
+      String modelFile = args[3];
+      String answerFile = args[4];
+      SCTester scTester = new SCTester(testFile, answerFile, modelFile);
+      scTester.runTest();
+    } else {
+      throw new IllegalArgumentException("Oops.  No App behavior specified!");
+    }
   }
+
 
   /**
    * Created by joel on 10/13/15.
@@ -60,7 +98,7 @@ public class App {
                          int nGramSize,
                          int folds,
                          int featureCountMin
-                         ) {
+    ) {
       this.learningRate = learningRate;
       this.learningDecay = learningDecay;
       this.terminationThreshold = terminationThreshold;
@@ -413,7 +451,6 @@ public class App {
     }
 
     /**
-     *
      * @param raw
      * @return
      */
