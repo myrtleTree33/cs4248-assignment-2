@@ -21,7 +21,7 @@ public class CS4248MachineTest {
     App.PredictionResult.printResults(machine.test(ROOT_PATH + "adapt_adopt.test", ROOT_PATH + "adapt_adopt.answer"));
   }
 
-//    @Ignore
+    @Ignore
   @Test
   public void testTrainGenerative() throws Exception {
 

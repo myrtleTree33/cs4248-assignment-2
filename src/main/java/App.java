@@ -412,6 +412,9 @@ public class App {
           weights.add(Double.valueOf(tokens[1]));
         }
       }
+
+      System.out.println(weights.size() + " features read.");
+
       Vector weightsV = Vector.zero(features.size());
       for (int i = 0; i < weights.size(); i++) {
         weightsV.set(i, weights.get(i));
@@ -1076,15 +1079,15 @@ public class App {
     }
 
     private void init() {
-      int featureCountMin = 4; // each feature must appear more than or equal to n times in corpus
+      int featureCountMin = 3; // each feature must appear more than or equal to n times in corpus
       int numFolds = 3;        // number of folds used
       int nGramSize = 3;       // size of Ngram chunks in collocation
-      double learningRate = 1.5;  // learning rate
-      double learningDecay = 0.75; // decay coefficient for learning rate
-      double terminationThreshold = 0.000000001; // how similar should weights be before termination
+      double learningRate = 2;  // learning rate
+      double learningDecay = 0.8; // decay coefficient for learning rate
+      double terminationThreshold = 0.0000000001; // how similar should weights be before termination
       long timeoutPerDimen = LogisticRegressionClassifier.NO_TIMEOUT; // do not wait for timeout
       float learningMinThreshold = 2; // deprecated DO NOT USE
-      int wordDiffMinThreshold = 10; // Remove stop words that appear less than this threshold, between labels
+      int wordDiffMinThreshold = 20; // Remove stop words that appear less than this threshold, between labels
       Util.Pair stopWordsRef = new Util.Pair(-4, 4); // the collocation to use
 
       machine = new CS4248Machine();

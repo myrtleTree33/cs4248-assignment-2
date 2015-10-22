@@ -9,7 +9,7 @@ import java.util.Date;
 /**
  * Created by joel on 10/20/15.
  */
-@Ignore
+//@Ignore
 public class SCTrainerTest {
 
   private final String ROOT_PATH = "src/test/resources/";
@@ -33,10 +33,10 @@ public class SCTrainerTest {
 
   private void train() throws IOException {
     scTrainer = new App.SCTrainer(
-        "adapt",
-        "adopt",
+        "peace",
+        "piece",
         ROOT_PATH + confusionPair + ".train",
-        ROOT_PATH + "testOutput-test.model.backup3");
+        ROOT_PATH + "testOutput-test.model.backup4");
     scTrainer.train();
     scTrainer.write();
   }
@@ -45,7 +45,7 @@ public class SCTrainerTest {
     scTester = new App.SCTester(
         ROOT_PATH + confusionPair + ".test",
         ROOT_PATH + confusionPair + ".answer",
-        ROOT_PATH + "testOutput-test.model.backup3"
+        ROOT_PATH + "testOutput-test.model.backup4"
     );
     scTester.runTest();
   }
