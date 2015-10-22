@@ -40,12 +40,12 @@ public class CS4248MachineTest {
     App.CS4248Machine machine = new App.CS4248Machine();
 //    int[] featureCountMin = new int[]{2, 3, 4};
     int[] featureCountMin = new int[]{4}; // 4 is best
-    int numFolds[] = new int[]{3};
+    int numFolds[] = new int[]{2,3,4};
 //    int[] nGramSize = new int[]{2,3,4};
-    int[] nGramSize = new int[]{3};
-    double[] learningRates = new double[]{1.5};
-//    double[] learningRates = new double[]{2, 1.7, 1.5, 1.2, 1.1};
-    double[] learningDecay = new double[]{0.75};
+    int[] nGramSize = new int[]{3,5,7,9};
+//    double[] learningRates = new double[]{1.5};
+    double[] learningRates = new double[]{2, 1.7, 1.5, 1.2, 1.1};
+    double[] learningDecay = new double[]{0.75, .8};
     double[] terminationThreshold = new double[]{
 //        0.0000001,
 //        0.00000001,
@@ -54,9 +54,9 @@ public class CS4248MachineTest {
 //        0.00000000001,
     };
     long timeoutPerDimen = App.LogisticRegressionClassifier.NO_TIMEOUT;
-    float[] learningMinThresholds = new float[]{2};
+    float[] learningMinThresholds = new float[]{2};// deprecated
 //    int[] wordDiffMinThresholds = new int[]{5,10,15,20,40};
-    int[] wordDiffMinThresholds = new int[]{20};
+    int[] wordDiffMinThresholds = new int[]{5,10,20};
     App.Util.Pair[] stopWordsRef = new App.Util.Pair[]{
 //        new Pair(-3, -1),
 //        new Pair(-4, -2),
