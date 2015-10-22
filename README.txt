@@ -17,7 +17,7 @@ Details of implementation is found in the accompanying report, in this folder.
 
 ## Production
 
-Both trainer and tester programs are found in `final/`.
+Both trainer and tester programs are found in `final/trainer` and `final/tester` respectively.
 
 ### Training
 
