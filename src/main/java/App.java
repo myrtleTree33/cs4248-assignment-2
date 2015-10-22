@@ -1,23 +1,36 @@
+/**
+ * Name: TONG Haowen Joel
+ * Matric ID: A0108165J
+ * <p/>
+ * CS4248 Assignment 2
+ * <p/>
+ * Oct 23, 2015
+ */
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.*;
 
 /**
  * Created by joel on 10/20/15.
+ * <p/>
+ * This is the public entry point for the App.
+ * <p/>
+ * Please set flags accordingly for trainer or tester.
  */
 public class App {
 
+  /* labels */
   public static final int APP_TRAIN = 0;
   public static final int APP_TEST = 1;
 
-  // sets the app to be a trainer or a tester
+  // NOTE: Please set accordingly.
   public static final int APP_TYPE = APP_TEST;
 
   /**
-   * The main entry point is here!
+   * Main entry point of program for both trainer and tester.
    *
    * @param args
    */
@@ -55,6 +68,8 @@ public class App {
 
   /**
    * Created by joel on 10/13/15.
+   * <p/>
+   * interface for classification.
    */
   public static interface Classifier {
 
@@ -67,6 +82,9 @@ public class App {
 
   /**
    * Created by joel on 10/14/15.
+   * <p/>
+   * The Machine packages the @link{Model} and @link{LogisticRegressionClassifier}
+   * into a higher-level, easy to use format.
    */
   public static class CS4248Machine implements Machine {
 
@@ -89,14 +107,29 @@ public class App {
     private long timeoutPerDimen;
     private int featureCountMin;
 
+    /**
+     * Sets the parameters of the machine.
+     *
+     * @param learningRate         Rate of learning.
+     * @param learningDecay        Rate to decay the rate of learning.
+     * @param terminationThreshold Deprecated.
+     * @param timeoutPerDimen      Usually, do not time out unless needed.
+     * @param learningMinThreshold Minimum threshold for w_n to be considered equal to w_n-1
+     * @param wordDiffMinThreshold Stop word minimum threshold.  Less than threshold stop words are removed.
+     * @param collocationStart     start index of collocation
+     * @param collocationEnd       stop index of collocation
+     * @param nGramSize            Size of Ngram used to chunk collocation
+     * @param folds                Number of folds used for training.
+     * @param featureCountMin      Minimum frequency count per feature; sparse features are removed.
+     */
     public void setParam(double learningRate,
                          double learningDecay,
                          double terminationThreshold,
                          long timeoutPerDimen,
                          float learningMinThreshold,
                          int wordDiffMinThreshold,
-                         int stopWordsStart,
-                         int stopWordsEnd,
+                         int collocationStart,
+                         int collocationEnd,
                          int nGramSize,
                          int folds,
                          int featureCountMin
@@ -107,17 +140,26 @@ public class App {
       this.timeoutPerDimen = timeoutPerDimen;
       this.learningMinThreshold = learningMinThreshold;
       this.wordDiffMinThreshold = wordDiffMinThreshold;
-      this.stopWordsStart = stopWordsStart;
-      this.stopWordsEnd = stopWordsEnd;
+      this.stopWordsStart = collocationStart;
+      this.stopWordsEnd = collocationEnd;
       this.nGramSize = nGramSize;
       this.folds = folds;
       this.featureCountMin = featureCountMin;
     }
 
+    /**
+     * Instantiates a new machine.
+     */
     public CS4248Machine() {
       classifier = new LogisticRegressionClassifier();
     }
 
+    /**
+     * Trains the dataset with file.
+     *
+     * @param datasetFileName
+     * @throws FileNotFoundException
+     */
     @Override
     public void train(String datasetFileName) throws FileNotFoundException {
       List<RawRecord> trainset = RawRecord.parse(datasetFileName);
@@ -152,6 +194,13 @@ public class App {
       model = trainNFolds(records, folds);
     }
 
+    /**
+     * Feature-reduction function, to winnow features down.
+     *
+     * @param features
+     * @param records
+     * @return
+     */
     private List<String> winnowFeatures(List<String> features, List<RawRecord> records) {
       Map<String, Integer> freqTable = makeFeatureFrequencyTable(features, records);
       List<String> prunedFeatures = new ArrayList<>(features.size());
@@ -167,6 +216,13 @@ public class App {
       return prunedFeatures;
     }
 
+    /**
+     * Make feature histogram table, for winnowing.
+     *
+     * @param features
+     * @param records
+     * @return
+     */
     private Map<String, Integer> makeFeatureFrequencyTable(List<String> features, List<RawRecord> records) {
       Map<String, Integer> freqTable = new HashMap<>(features.size());
 
@@ -194,6 +250,11 @@ public class App {
       return freqTable;
     }
 
+    /**
+     * Generates features used, including all tokens and Ngrams.
+     * <p/>
+     * Needs winnowing.
+     */
     private void generateFeatures() {
       features = new ArrayList<>();
       features.addAll(vocabulary);
@@ -208,18 +269,38 @@ public class App {
       System.out.println(sb.toString());
     }
 
+    /**
+     * Train using a list of records.
+     *
+     * @param records
+     * @return
+     */
     private Model train(List<Record> records) {
       classifier.loadDataset(records);
       Model model = classifier.train(learningMinThreshold, learningRate, learningDecay, terminationThreshold, timeoutPerDimen);
       return model;
     }
 
+    /**
+     * Train using records and and initial set of weights.
+     *
+     * @param records
+     * @param initialWeights
+     * @return
+     */
     private Model train(List<Record> records, Vector initialWeights) {
       classifier.loadDataset(records);
       Model model = classifier.train(initialWeights, learningMinThreshold, learningRate, learningDecay, terminationThreshold, timeoutPerDimen);
       return model;
     }
 
+    /**
+     * Train and evaluate using N folds.
+     *
+     * @param records
+     * @param nFolds
+     * @return
+     */
     private Model trainNFolds(List<Record> records, int nFolds) {
       Model bestModel = null;
       double bestAccuracy = 0d;
@@ -249,6 +330,14 @@ public class App {
       return bestModel;
     }
 
+    /**
+     * Remove undistinct stop words from train set.
+     *
+     * @param trainset
+     * @param stopWordsAll
+     * @param minThreshold
+     * @return
+     */
     private Set<String> optimizeStopWords(List<RawRecord> trainset, Set<String> stopWordsAll, int minThreshold) {
       HashMap<String, List<RawRecord>> partitions = RawRecord.segment(trainset);
       // convert all label partitions to array list for processing
@@ -265,6 +354,14 @@ public class App {
       return optimizedStopWords;
     }
 
+    /**
+     * Test the trained model on a given test set.
+     *
+     * @param questionFilename
+     * @param answerFilename
+     * @return
+     * @throws FileNotFoundException
+     */
     @Override
     public Map<String, PredictionResult> test(String questionFilename, String answerFilename) throws FileNotFoundException {
       List<RawRecord> testSet = RawRecord.parse(questionFilename, answerFilename);
@@ -288,6 +385,11 @@ public class App {
       return results;
     }
 
+    /**
+     * Maps labels
+     *
+     * @param trainset
+     */
     private void mapLabels(List<RawRecord> trainset) {
       mappings = new ArrayList<>(2);
       mappings.add(trainset.get(0).getLabel());
@@ -363,10 +465,20 @@ public class App {
       return new Record(getLabelInt(in.getLabel()), v);
     }
 
+    /**
+     * Gets the native model.
+     *
+     * @return
+     */
     public Model getModel() {
       return model;
     }
 
+    /**
+     * Sets the native model.
+     *
+     * @param model
+     */
     public void setModel(Model model) {
       this.model = model;
     }
@@ -387,7 +499,6 @@ public class App {
       fw.append(mappings.get(0) + " " + mappings.get(1) + "\n");
       for (int i = 0; i < features.size(); i++) {
         String f = features.get(i);
-        BigDecimal weightPrecise = BigDecimal.valueOf(model.getWeights().get(i));
         fw.append(f + ":" + model.getWeights().get(i) + "\n");
       }
       fw.close();
@@ -411,7 +522,7 @@ public class App {
         String[] tokens = scanner.nextLine().split(":");
         if (tokens.length == 2) {
           features.add(tokens[0]);
-          weights.add(Double.valueOf(tokens[1]));
+          weights.add(Double.parseDouble(tokens[1]));
         }
       }
 
@@ -424,6 +535,11 @@ public class App {
       model = new Model(weightsV);
     }
 
+    /**
+     * Util function.
+     *
+     * @param labels
+     */
     public void makeMapLabels(String[] labels) {
       mappings = new ArrayList<>();
       mappings.add(labels[0]);
@@ -433,6 +549,11 @@ public class App {
 
   /**
    * Created by joel on 10/13/15.
+   * <p/>
+   * Implements a Logisitic Regression Classifier.
+   * <p/>
+   * For generalizability, features are generalized to a set of low-lying weights,
+   * rather than custom Feature classes per-se.
    */
   public static class LogisticRegressionClassifier implements Classifier {
 
@@ -448,6 +569,11 @@ public class App {
     public LogisticRegressionClassifier() {
     }
 
+    /**
+     * Loads a dataset of low-level Records.
+     *
+     * @param records
+     */
     public void loadDataset(List<Record> records) {
       this.records = records;
       this.alpha = 2;
@@ -457,6 +583,8 @@ public class App {
     }
 
     /**
+     * The heaviside function.
+     *
      * @param raw
      * @return
      */
@@ -468,6 +596,11 @@ public class App {
       }
     }
 
+    /**
+     * Get dimensions used in classifier.
+     *
+     * @return
+     */
     private int getDimen() {
       if (records.size() < 1) {
         return 0;
@@ -475,11 +608,22 @@ public class App {
       return records.get(0).getDimen();
     }
 
+    /**
+     * Train the dataset with initial zero vector.
+     *
+     * @return
+     */
     public Model train() {
       Vector weights = Vector.zero(getDimen());
       return train(weights);
     }
 
+    /**
+     * Train the dataset with initial custom vector.
+     *
+     * @param weights
+     * @return
+     */
     public Model train(Vector weights) {
       // init weights to zero
 
@@ -489,6 +633,17 @@ public class App {
       return new Model(weights);
     }
 
+    /**
+     * Train using batch method.  Deprecated.
+     *
+     * @param records
+     * @param existingWeights
+     * @param alpha
+     * @param learningDecay
+     * @param terminationThreshold
+     * @param timeoutPerDimen
+     */
+    @Deprecated
     private void trainWeightBatch(List<Record> records,
                                   Vector existingWeights,
                                   double alpha,
@@ -511,6 +666,15 @@ public class App {
       System.out.println("Exited!");
     }
 
+    /**
+     * Helper function.  Deprecated.
+     *
+     * @param currIdx
+     * @param records
+     * @param existingWeights
+     * @return
+     */
+    @Deprecated
     private double batchSum(int currIdx, List<Record> records, Vector existingWeights) {
       double sum = 0;
       for (Record r : records) {
@@ -519,6 +683,26 @@ public class App {
       return sum;
     }
 
+    /**
+     * Train using stochastic method.
+     * <p/>
+     * This method enforces more rigid implementation,
+     * by going through each record until all weights
+     * are sufficiently satisfied to perform with given weight.
+     * <p/>
+     * It also implements higher learning rates for earlier iterations, to
+     * reach coarse max faster, and finer learning rates for later iterations,
+     * to finetune learning rates. (see Daniel T Larose, Discoering Knowledge in Data)
+     * <p/>
+     * It is still faster than batch.
+     *
+     * @param records              A list of low-level records to train on.
+     * @param existingWeights      Existing weights to use for training.
+     * @param alpha                Learning rate.
+     * @param learningDecay        Decay rate for learning rate.
+     * @param terminationThreshold When to terminate each weight iteration.
+     * @param timeoutPerDimen      Maximum timeout, do not use.
+     */
     private void trainWeightStochastic(List<Record> records,
                                        Vector existingWeights,
                                        double alpha,
@@ -545,6 +729,15 @@ public class App {
       System.out.println("Exited!");
     }
 
+    /**
+     * Trains on the dataset, outputting a model.
+     * @param minThreshold
+     * @param alpha
+     * @param learningDecay
+     * @param terminationThreshold
+     * @param timeoutPerDimen
+     * @return
+     */
     public Model train(float minThreshold, double alpha, double learningDecay, double terminationThreshold, long timeoutPerDimen) {
       this.minThreshold = minThreshold;
       this.alpha = alpha;
@@ -554,6 +747,16 @@ public class App {
       return train();
     }
 
+    /**
+     * Train with a given set of initial weights.
+     * @param initialWeights
+     * @param minThreshold
+     * @param alpha
+     * @param learningDecay
+     * @param terminationThreshold
+     * @param timeoutPerDimen
+     * @return
+     */
     public Model train(Vector initialWeights, float minThreshold, double alpha, double learningDecay, double terminationThreshold, long timeoutPerDimen) {
       this.minThreshold = minThreshold;
       this.alpha = alpha;
@@ -563,6 +766,10 @@ public class App {
       return train(initialWeights);
     }
 
+    /**
+     * Deprecated.
+     * @return
+     */
     public double test() {
       return 0;
     }
@@ -570,6 +777,9 @@ public class App {
 
   /**
    * Created by joel on 10/14/15.
+   *
+   * Interface for Machine.
+   *
    */
   public static interface Machine {
 
@@ -580,6 +790,9 @@ public class App {
 
   /**
    * Created by joel on 10/14/15.
+   *
+   * The model to use.
+   *
    */
   public static class Model {
     private Vector weights;
