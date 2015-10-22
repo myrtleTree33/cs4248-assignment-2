@@ -791,7 +791,7 @@ public class App {
   /**
    * Created by joel on 10/14/15.
    *
-   * The model to use.
+   * Specifies the model.
    *
    */
   public static class Model {
@@ -801,14 +801,28 @@ public class App {
       this.weights = weights;
     }
 
+    /**
+     * Gets weights.
+     * @return
+     */
     public Vector getWeights() {
       return weights;
     }
 
+    /**
+     * Sets weights.
+     * @param weights
+     */
     public void setWeights(Vector weights) {
       this.weights = weights;
     }
 
+    /**
+     * Evaluate a given set of vectors and output a label,
+     * as according to lecture notes. (0 or a 1).
+     * @param vectors
+     * @return label 0 or label 1.
+     */
     public int evaluate(Vector vectors) {
       return LogisticRegressionClassifier.heaviside(weights.dot(vectors));
     }
@@ -845,6 +859,11 @@ public class App {
 
   /**
    * Created by joel on 10/15/15.
+   *
+   * Helper function to store prediction results.
+   *
+   * Useful for getting per label.
+   *
    */
   public static class PredictionResult {
 
@@ -861,6 +880,11 @@ public class App {
       this.correct = 0;
     }
 
+    /**
+     * Gets labels.
+     * @param results
+     * @return
+     */
     public static List<String> getLabels(Map<String, PredictionResult> results) {
       List<String> labels = new ArrayList<>(2);
       for (String key : results.keySet()) {
@@ -870,18 +894,32 @@ public class App {
       return labels;
     }
 
+    /**
+     * Increases total
+     */
     public void incTotal() {
       total++;
     }
 
+    /**
+     * Increases correct
+     */
     public void incCorrect() {
       correct++;
     }
 
+    /**
+     * Retrieves accuracy.
+     * @return
+     */
     public double getAccuracy() {
       return ((double) correct) / total;
     }
 
+    /**
+     * Pretty-print a list of PredictionResults.
+     * @param results
+     */
     public static void printResults(Map<String, PredictionResult> results) {
       StringBuffer sb = new StringBuffer();
       double correct = 0;
@@ -903,6 +941,10 @@ public class App {
 
   /**
    * Created by joel on 10/14/15.
+   *
+   * A RawRecord is a higher-level version of a @link{Record}, and stores
+   * label info.
+   *
    */
   public static class RawRecord {
 
@@ -928,6 +970,12 @@ public class App {
       return new ArrayList<>(Arrays.asList(text.split("[\\s']")));
     }
 
+    /**
+     * Parses a file into a list of Raw Records.
+     * @param filename
+     * @return
+     * @throws FileNotFoundException
+     */
     public static List<RawRecord> parse(String filename) throws FileNotFoundException {
       List<RawRecord> result = new ArrayList<>();
       Scanner scanner = new Scanner(new File(filename));
@@ -940,6 +988,11 @@ public class App {
       return result;
     }
 
+    /**
+     * Helper function.
+     * @param in
+     * @return
+     */
     private static Map<String, String> makeAnswerMap(Scanner in) {
       Map<String, String> result = new HashMap<>();
       while (in.hasNextLine()) {
@@ -951,6 +1004,11 @@ public class App {
       return result;
     }
 
+    /**
+     * Helper function
+     * @param in
+     * @return
+     */
     private static Map<String, List<String>> makeQuestionMap(Scanner in) {
       Map<String, List<String>> result = new HashMap<>();
       while (in.hasNextLine()) {
@@ -962,6 +1020,13 @@ public class App {
       return result;
     }
 
+    /**
+     * Parse a test file.
+     * @param questionFilename
+     * @param answerFilename
+     * @return
+     * @throws FileNotFoundException
+     */
     public static List<RawRecord> parse(String questionFilename, String answerFilename) throws FileNotFoundException {
       List<RawRecord> result = new ArrayList<>();
       Map<String, List<String>> questions = makeQuestionMap(new Scanner(new File(questionFilename)));
@@ -1018,18 +1083,32 @@ public class App {
       return foundLabel;
     }
 
+    /**
+     * Removes tokens
+     * @param rawRecords
+     * @param stopWords
+     */
     public static void removeTokens(List<RawRecord> rawRecords, Set<String> stopWords) {
       for (RawRecord record : rawRecords) {
         record.removeTokens(stopWords);
       }
     }
 
+    /**
+     * Removes punctuation
+     * @param rawRecords
+     */
     public static void removePunctuation(List<RawRecord> rawRecords) {
       for (RawRecord record : rawRecords) {
         record.removePunctuation();
       }
     }
 
+    /**
+     * Creates a vocabulary list.
+     * @param records
+     * @return
+     */
     public static HashMap<String, Integer> makeVocabulary(List<RawRecord> records) {
       HashMap<String, Integer> vocabulary = new HashMap<>();
       for (RawRecord record : records) {
@@ -1045,6 +1124,11 @@ public class App {
       return vocabulary;
     }
 
+    /**
+     * Creates a vocabulary list.
+     * @param records
+     * @return
+     */
     public static List<String> makeVocabularyList(List<RawRecord> records) {
       HashMap<String, Integer> vocabulary = makeVocabulary(records);
       List<String> result = new ArrayList<>();
@@ -1209,6 +1293,9 @@ public class App {
   }
 
   /**
+   *
+   * A Record is the lowest-level element used by the @link{LogisticRegressionClassifier}.
+   *
    * Created by joel on 10/13/15.
    */
   public static class Record {
@@ -1246,6 +1333,9 @@ public class App {
   }
 
   /**
+   *
+   * High-level function for creating a test app.
+   *
    * Created by joel on 10/20/15.
    */
   public static class SCTester {
@@ -1275,6 +1365,9 @@ public class App {
   }
 
   /**
+   *
+   * High-level function for creating a train app.
+   *
    * Created by joel on 10/20/15.
    */
   public static class SCTrainer {
@@ -1293,6 +1386,9 @@ public class App {
       init();
     }
 
+    /**
+     * Trains with a set of parameters found.
+     */
     private void init() {
       int featureCountMin = 3; // each feature must appear more than or equal to n times in corpus
       int numFolds = 3;        // number of folds used
@@ -1334,6 +1430,9 @@ public class App {
 
   /**
    * Created by joel on 10/20/15.
+   *
+   * Stop words pasted into program.
+   *
    */
   public static class StopWords {
 
@@ -1614,6 +1713,9 @@ public class App {
 
   /**
    * Created by joel on 10/14/15.
+   *
+   * A Util class.
+   *
    */
   public static class Util {
 
@@ -1680,6 +1782,9 @@ public class App {
     }
 
     /**
+     *
+     * Get N-Grams from collocation.
+     *
      * @param tokens
      * @param start
      * @param end
@@ -1704,6 +1809,14 @@ public class App {
       return collocations;
     }
 
+    /**
+     * Retrieves a collocation, includes fall-back options if unavailable.
+     * @param tokens
+     * @param start
+     * @param end
+     * @param ref
+     * @return
+     */
     public static List<String> getCollocation(List<String> tokens, int start, int end, int ref) {
       int max = ref + end;
       int min = ref + start;
@@ -1723,6 +1836,12 @@ public class App {
       return tokens.subList(min, max);
     }
 
+    /**
+     * Joins a list of tokens into a String with given separator.
+     * @param separator
+     * @param tokens
+     * @return
+     */
     public static String join(String separator, List<String> tokens) {
       if (tokens.size() < 1) return "";
       StringBuffer sb = new StringBuffer();
@@ -1734,6 +1853,12 @@ public class App {
       return sb.toString();
     }
 
+    /**
+     * Retrieves a list of Ngrams in a given collocation.
+     * @param n
+     * @param collocation
+     * @return
+     */
     public static List<String> getNGrams(int n, List<String> collocation) {
       List<String> nGrams = new ArrayList<>();
       for (int i = 0; i < collocation.size() - n; i++) {
