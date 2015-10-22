@@ -2,6 +2,8 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by joel on 10/14/15.
@@ -14,7 +16,7 @@ public class CS4248MachineTest {
   @Test
   public void testTrain() throws Exception {
     App.CS4248Machine machine = new App.CS4248Machine();
-    machine.setParam(0.1, 0.8, 0.00000000001, App.LogisticRegressionClassifier.NO_TIMEOUT, 5, 30, -3, -1, 3, 2);
+    machine.setParam(0.1, 0.8, 0.00000000000001, App.LogisticRegressionClassifier.NO_TIMEOUT, 5, 30, -3, -1, 3, 2, 2);
     machine.train(ROOT_PATH + "adapt_adopt.train");
     App.PredictionResult.printResults(machine.test(ROOT_PATH + "adapt_adopt.test", ROOT_PATH + "adapt_adopt.answer"));
   }
@@ -36,15 +38,20 @@ public class CS4248MachineTest {
     }
 
     App.CS4248Machine machine = new App.CS4248Machine();
-    int numFolds = 3;
+//    int[] featureCountMin = new int[]{2, 3, 4};
+    int[] featureCountMin = new int[]{2};
+    int numFolds[] = new int[]{3};
 //    int[] nGramSize = new int[]{2,3,4};
-    int[] nGramSize = new int[]{3};
-    double[] learningRates = new double[]{2, 1.7, 1.5, 1.2, 1.1};
-//    double[] learningDecay = new double[]{0.75};
+    int[] nGramSize = new int[]{2,3,4,5};
+    double[] learningRates = new double[]{1.5};
+//    double[] learningRates = new double[]{2, 1.7, 1.5, 1.2, 1.1};
     double[] learningDecay = new double[]{0.75};
     double[] terminationThreshold = new double[]{
-        0.0000000001,
-        0.000000000001
+//        0.0000001,
+//        0.00000001,
+//        0.000000001,
+        0.0000000001, // best
+//        0.00000000001,
     };
     long timeoutPerDimen = App.LogisticRegressionClassifier.NO_TIMEOUT;
     float[] learningMinThresholds = new float[]{2};
@@ -84,11 +91,11 @@ public class CS4248MachineTest {
 //        new Pair(7, 13)
 
 //        new Pair(-2, 2),
-        new App.Util.Pair(-3, 3),
-//        new App.Util.Pair(-5, 5),
+        new App.Util.Pair(-3, 3), // best
+        new App.Util.Pair(-5, 5),
 //        new App.Util.Pair(-6, 6),
 //        new App.Util.Pair(-7, 7),
-//        new App.Util.Pair(-10, 10),
+        new App.Util.Pair(-4, 4),
 //        new Pair(-4, 4),
 
     };
@@ -116,6 +123,25 @@ public class CS4248MachineTest {
 //    String testFilePath = ROOT_PATH + "adapt_adopt.test";
 //    String testAnswerFilePath = ROOT_PATH + "adapt_adopt.answer";
 
+    StringBuffer csvDump = new StringBuffer();
+    csvDump.append(
+        "Filename," +
+            "LearningRate," +
+            "LearningMinThreshold," +
+            "WordDiffMinThresholds," +
+            "stopWordsStart," +
+            "stopWordsEnd," +
+            "NGramSize," +
+            "TerminationThreshold," +
+            "FeatureCountMin," +
+            "NumFolds," +
+            "TimeTaken," +
+            "Word1Accuracy," +
+            "Word2Accuracy," +
+            "TotalAccuracy" +
+            "\n"
+    );
+
     for (int h = 0; h < datasets.length; h++) {
       for (int b = 0; b < learningMinThresholds.length; b++) {
         for (int c = 0; c < wordDiffMinThresholds.length; c++) {
@@ -124,40 +150,72 @@ public class CS4248MachineTest {
               for (int g = 0; g < terminationThreshold.length; g++) {
                 for (int f = 0; f < learningDecay.length; f++) {
                   for (int a = 0; a < learningRates.length; a++) {
+                    for (int i = 0; i < featureCountMin.length; i++) {
+                      for (int j = 0; j < numFolds.length; j++) {
 
-                    String trainFilePath = ROOT_PATH + datasets[h].trainFilepath;
-                    String testFilePath = ROOT_PATH + datasets[h].testFilepath;
-                    String testAnswerFilePath = ROOT_PATH + datasets[h].answerFilepath;
+                        String trainFilePath = ROOT_PATH + datasets[h].trainFilepath;
+                        String testFilePath = ROOT_PATH + datasets[h].testFilepath;
+                        String testAnswerFilePath = ROOT_PATH + datasets[h].answerFilepath;
 
 
-                    long startTime = new Date().getTime();
-                    machine.setParam(
-                        learningRates[a],
-                        learningDecay[f],
-                        terminationThreshold[g],
-                        timeoutPerDimen,
-                        learningMinThresholds[b],
-                        wordDiffMinThresholds[c],
-                        stopWordsRef[d].a,
-                        stopWordsRef[d].b,
-                        nGramSize[e],
-                        numFolds
-                    );
+                        long startTime = new Date().getTime();
+                        machine.setParam(
+                            learningRates[a],
+                            learningDecay[f],
+                            terminationThreshold[g],
+                            timeoutPerDimen,
+                            learningMinThresholds[b],
+                            wordDiffMinThresholds[c],
+                            stopWordsRef[d].a,
+                            stopWordsRef[d].b,
+                            nGramSize[e],
+                            numFolds[j],
+                            featureCountMin[i]
+                        );
 
-                    machine.train(trainFilePath);
-                    long timeDiff = new Date().getTime() - startTime;
-                    System.out.println(
-                        "Filename=" + trainFilePath + " " +
-                        "LearningRate=" + learningRates[a] + " " +
-                            "LearningMinThresholds=" + learningMinThresholds[b] + " " +
-                            "WordDiffMinThresholds=" + wordDiffMinThresholds[c] + " " +
-                            "stopWordsStart=" + stopWordsRef[d].a + " " +
-                            "stopWordsEnd=" + stopWordsRef[d].b + " " +
-                            "NGramSize=" + nGramSize[e] + " " +
-                            "TimeTaken=" + (timeDiff / 1000) + "s"
-                    );
-                    App.PredictionResult.printResults(machine.test(testFilePath, testAnswerFilePath));
+                        machine.train(trainFilePath);
+                        long timeDiff = new Date().getTime() - startTime;
+                        System.out.println(
+                            "Filename=" + trainFilePath + " " +
+                                "LearningRate=" + learningRates[a] + " " +
+                                "LearningMinThresholds=" + learningMinThresholds[b] + " " +
+                                "WordDiffMinThresholds=" + wordDiffMinThresholds[c] + " " +
+                                "stopWordsStart=" + stopWordsRef[d].a + " " +
+                                "stopWordsEnd=" + stopWordsRef[d].b + " " +
+                                "NGramSize=" + nGramSize[e] + " " +
+                                "TerminationThreshold=" + terminationThreshold[g] + " " +
+                                "FeatureCountMin=" + featureCountMin[i] + " " +
+                                "NumFolds=" + numFolds[j] + " " +
+                                "TimeTaken=" + (timeDiff / 1000) + "s"
+                        );
+                        Map<String, App.PredictionResult> results = machine.test(testFilePath, testAnswerFilePath);
+                        App.PredictionResult.printResults(results);
+                        List<String> labels = App.PredictionResult.getLabels(results);
 
+                        double word1Accuracy = results.get(labels.get(0)).getAccuracy();
+                        double word2Accuracy = results.get(labels.get(1)).getAccuracy();
+                        double totalAccuracy = (word1Accuracy + word2Accuracy) / 2;
+
+
+                        csvDump.append(
+                            trainFilePath + "," +
+                                learningRates[a] + "," +
+                                learningMinThresholds[b] + "," +
+                                wordDiffMinThresholds[c] + "," +
+                                stopWordsRef[d].a + "," +
+                                stopWordsRef[d].b + "," +
+                                nGramSize[e] + "," +
+                                terminationThreshold[g] + "," +
+                                featureCountMin[i] + "," +
+                                numFolds[j] + "," +
+                                timeDiff + "," +
+                                word1Accuracy + "," +
+                                word2Accuracy + "," +
+                                totalAccuracy +
+                                "\n"
+                        );
+                      }
+                    }
                   }
                 }
               }
@@ -166,6 +224,10 @@ public class CS4248MachineTest {
         }
       }
     }
+
+    System.out.println("--- CSV Dump ---");
+    System.out.println(csvDump.toString());
+    System.out.println("--- /CSV Dump ---");
   }
 
 }

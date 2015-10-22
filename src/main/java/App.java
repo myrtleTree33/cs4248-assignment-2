@@ -19,7 +19,9 @@ public class App {
   public static interface Classifier {
 
     public void loadDataset(List<Record> records);
+
     public Model train();
+
     public double test();
   }
 
@@ -45,6 +47,7 @@ public class App {
     private double learningDecay;
     private double terminationThreshold;
     private long timeoutPerDimen;
+    private int featureCountMin;
 
     public void setParam(double learningRate,
                          double learningDecay,
@@ -55,7 +58,9 @@ public class App {
                          int stopWordsStart,
                          int stopWordsEnd,
                          int nGramSize,
-                         int folds) {
+                         int folds,
+                         int featureCountMin
+                         ) {
       this.learningRate = learningRate;
       this.learningDecay = learningDecay;
       this.terminationThreshold = terminationThreshold;
@@ -66,6 +71,7 @@ public class App {
       this.stopWordsEnd = stopWordsEnd;
       this.nGramSize = nGramSize;
       this.folds = folds;
+      this.featureCountMin = featureCountMin;
     }
 
     public CS4248Machine() {
@@ -85,8 +91,8 @@ public class App {
       );
 
       RawRecord.removeTokens(trainset, stopWords);
-  //    System.out.println(stopWords.size());
-  //    App.RawRecord.print(trainset);
+      //    System.out.println(stopWords.size());
+      //    App.RawRecord.print(trainset);
 
       mapLabels(trainset); // generate label mapping
 
@@ -95,6 +101,8 @@ public class App {
       collocationNGrams = RawRecord.makeCollocationsNGramsList(nGramSize, trainset, stopWordsStart, stopWordsEnd);
 
       generateFeatures();
+      this.features = winnowFeatures(features, trainset);
+      System.out.println("PrunedFeatureSize=" + features.size());
 
       for (RawRecord r : trainset) {
         records.add(convToRecord(r, features));
@@ -102,6 +110,48 @@ public class App {
       Collections.shuffle(records); // shuffle the collection to ensure unbiased ordering
 
       model = trainNFolds(records, folds);
+    }
+
+    private List<String> winnowFeatures(List<String> features, List<RawRecord> records) {
+      Map<String, Integer> freqTable = makeFeatureFrequencyTable(features, records);
+      List<String> prunedFeatures = new ArrayList<>(features.size());
+      int count = 0;
+      for (String f : features) {
+        Integer freq = freqTable.get(f);
+        if (freq >= featureCountMin) {
+          prunedFeatures.add(f);
+        }
+      }
+      int reducedStatistic = features.size() - prunedFeatures.size();
+      System.out.println("There are " + reducedStatistic + " redundant features.");
+      return prunedFeatures;
+    }
+
+    private Map<String, Integer> makeFeatureFrequencyTable(List<String> features, List<RawRecord> records) {
+      Map<String, Integer> freqTable = new HashMap<>(features.size());
+
+      for (String f : features) {
+        freqTable.put(f, 0);
+      }
+
+      for (RawRecord r : records) {
+        // make word token frequency
+        for (String token : r.getTokens()) {
+          if (freqTable.containsKey(token)) {
+            freqTable.put(token, freqTable.get(token) + 1);
+          }
+        }
+        // then make nGram frequency
+        List<String> collocation = Util.getCollocation(r.getTokens(), stopWordsStart, stopWordsEnd, r.getIdx());
+        List<String> nGrams = Util.getNGrams(nGramSize, collocation);
+        for (String nGram : nGrams) {
+          if (freqTable.containsKey(nGram)) {
+            freqTable.put(nGram, freqTable.get(nGram) + 1);
+          }
+        }
+      }
+
+      return freqTable;
     }
 
     private void generateFeatures() {
@@ -244,7 +294,7 @@ public class App {
      * @return
      */
     private Record convToRecord(RawRecord in, List<String> features) {
-  //    App.Vector v = App.Vector.zero(features.size() + collocationNGrams.size());
+      //    App.Vector v = App.Vector.zero(features.size() + collocationNGrams.size());
       Vector v = Vector.zero(features.size());
       // first process individual word tokens ---
       for (String token : in.getTokens()) {
@@ -363,10 +413,8 @@ public class App {
     }
 
     /**
-     * Heaviside function used to calculate y result
      *
-     * @param weights
-     * @param vectors
+     * @param raw
      * @return
      */
     public static int heaviside(double raw) {
@@ -403,13 +451,13 @@ public class App {
                                        double learningDecay,
                                        double terminationThreshold,
                                        long timeoutPerDimen) {
-  //    long startTime = new Date().getTime();
+      //    long startTime = new Date().getTime();
       // for each weight
       for (int i = 0; i < getDimen(); i++) {
         double diff = 999;
         double currAlpha = alpha;
         while (diff > terminationThreshold) {
-  //        boolean hasTimeout = ((new Date().getTime() - startTime) < timeoutPerDimen || timeoutPerDimen != NO_TIMEOUT)
+          //        boolean hasTimeout = ((new Date().getTime() - startTime) < timeoutPerDimen || timeoutPerDimen != NO_TIMEOUT)
           currAlpha *= learningDecay;
           for (int x = 0; x < records.size(); x++) {
             Record r = records.get(x);
@@ -487,7 +535,7 @@ public class App {
 
     /**
      * A low-level native method used to test accuracy
-     *
+     * <p/>
      * Necessary for N-fold cross validation
      *
      * @param testSet A list of records to test on.
@@ -524,6 +572,15 @@ public class App {
     public PredictionResult() {
       this.total = 0;
       this.correct = 0;
+    }
+
+    public static List<String> getLabels(Map<String, PredictionResult> results) {
+      List<String> labels = new ArrayList<>(2);
+      for (String key : results.keySet()) {
+        labels.add(key);
+      }
+      Collections.sort(labels); // always ensure alphabetical
+      return labels;
     }
 
     public void incTotal() {
@@ -786,13 +843,13 @@ public class App {
       }
 
       //Monkey Patch return collocation straight instead
-  //    for (App.RawRecord record : records) {
-  //      int max = record.getTokens().size() - 1;
-  //      int realStart = Math.min(Math.max(0, record.getIdx() + start), max);
-  //      int realEnd = Math.max(0, Math.min(max, record.getIdx() - start));
-  //      String collocation = App.Util.join(" ", record.getTokens().subList(realStart, realEnd));
-  //      collocations.add(collocation);
-  //    }
+      //    for (App.RawRecord record : records) {
+      //      int max = record.getTokens().size() - 1;
+      //      int realStart = Math.min(Math.max(0, record.getIdx() + start), max);
+      //      int realEnd = Math.max(0, Math.min(max, record.getIdx() - start));
+      //      String collocation = App.Util.join(" ", record.getTokens().subList(realStart, realEnd));
+      //      collocations.add(collocation);
+      //    }
 
       return collocations;
     }
@@ -950,7 +1007,7 @@ public class App {
     }
 
     private void init() {
-
+      int featureCountMin = 2;
       int numFolds = 5;
       int nGramSize = 3;
       double learningRate = 2;
@@ -959,17 +1016,17 @@ public class App {
       long timeoutPerDimen = LogisticRegressionClassifier.NO_TIMEOUT;
       float learningMinThreshold = 5;
       int wordDiffMinThreshold = 7;
-      Util.Pair stopWordsRef = new Util.Pair(-7,2);
+      Util.Pair stopWordsRef = new Util.Pair(-7, 2);
 
-  //    int numFolds = 5;
-  //    int nGramSize = 3;
-  //    double learningRate = 0.15;
-  //    double learningDecay = 0.75;
-  //    double terminationThreshold = 0.0000000001;
-  //    long timeoutPerDimen = App.LogisticRegressionClassifier.NO_TIMEOUT;
-  //    float learningMinThreshold = 5;
-  //    int wordDiffMinThreshold = 7;
-  //    App.Util.Pair stopWordsRef = new App.Util.Pair(-2,2);
+      //    int numFolds = 5;
+      //    int nGramSize = 3;
+      //    double learningRate = 0.15;
+      //    double learningDecay = 0.75;
+      //    double terminationThreshold = 0.0000000001;
+      //    long timeoutPerDimen = App.LogisticRegressionClassifier.NO_TIMEOUT;
+      //    float learningMinThreshold = 5;
+      //    int wordDiffMinThreshold = 7;
+      //    App.Util.Pair stopWordsRef = new App.Util.Pair(-2,2);
 
       machine = new CS4248Machine();
       machine.setParam(
@@ -982,7 +1039,8 @@ public class App {
           stopWordsRef.a,
           stopWordsRef.b,
           nGramSize,
-          numFolds
+          numFolds,
+          featureCountMin
       );
 
     }
@@ -1284,6 +1342,7 @@ public class App {
 
     /**
      * Load stop words from file
+     *
      * @param filename
      * @return
      * @throws FileNotFoundException
@@ -1300,6 +1359,7 @@ public class App {
 
     /**
      * Load stop words from memory
+     *
      * @return
      */
     public static Set<String> loadStopWords() {
@@ -1382,7 +1442,7 @@ public class App {
       if (max < 0) {
         max = 0;
       }
-  //    String collocation = App.Util.join(" ", tokens.subList(min, max));
+      //    String collocation = App.Util.join(" ", tokens.subList(min, max));
       return tokens.subList(min, max);
     }
 
@@ -1418,7 +1478,7 @@ public class App {
 
   /**
    * Class for handling Vectors.
-   *
+   * <p/>
    * Created by joel on 10/13/15.
    */
   public static class Vector {
