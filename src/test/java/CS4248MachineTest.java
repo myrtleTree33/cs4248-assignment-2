@@ -39,7 +39,7 @@ public class CS4248MachineTest {
 
     App.CS4248Machine machine = new App.CS4248Machine();
 //    int[] featureCountMin = new int[]{2, 3, 4};
-    int[] featureCountMin = new int[]{2};
+    int[] featureCountMin = new int[]{2,3,4,5};
     int numFolds[] = new int[]{3};
 //    int[] nGramSize = new int[]{2,3,4};
     int[] nGramSize = new int[]{2,3,4,5};
