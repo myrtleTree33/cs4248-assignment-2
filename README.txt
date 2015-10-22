@@ -19,6 +19,11 @@ Details of implementation is found in the accompanying report, in this folder.
 
 Both trainer and tester programs are found in `final/trainer` and `final/tester` respectively.
 
+If does not run with `java ...`, ensure that program is compiled before running:
+
+    $ javac sctrain.java
+    $ javac sctest.java
+
 ### Training
 
     java sctrain <word1> <word2> <train_file> <model_file>
