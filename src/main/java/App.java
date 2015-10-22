@@ -1007,26 +1007,16 @@ public class App {
     }
 
     private void init() {
-      int featureCountMin = 2;
-      int numFolds = 5;
-      int nGramSize = 3;
-      double learningRate = 2;
-      double learningDecay = 0.75;
-      double terminationThreshold = 0.0000000001;
-      long timeoutPerDimen = LogisticRegressionClassifier.NO_TIMEOUT;
-      float learningMinThreshold = 5;
-      int wordDiffMinThreshold = 7;
-      Util.Pair stopWordsRef = new Util.Pair(-7, 2);
-
-      //    int numFolds = 5;
-      //    int nGramSize = 3;
-      //    double learningRate = 0.15;
-      //    double learningDecay = 0.75;
-      //    double terminationThreshold = 0.0000000001;
-      //    long timeoutPerDimen = App.LogisticRegressionClassifier.NO_TIMEOUT;
-      //    float learningMinThreshold = 5;
-      //    int wordDiffMinThreshold = 7;
-      //    App.Util.Pair stopWordsRef = new App.Util.Pair(-2,2);
+      int featureCountMin = 4; // each feature must appear more than or equal to 4 times in corpus
+      int numFolds = 3;        // number of folds used
+      int nGramSize = 3;       // size of Ngram chunks in collocation
+      double learningRate = 1.8;  // learning rate
+      double learningDecay = 0.8; // decay coefficient for learning rate
+      double terminationThreshold = 0.0000000001; // how similar should weights be before termination
+      long timeoutPerDimen = LogisticRegressionClassifier.NO_TIMEOUT; // do not wait for timeout
+      float learningMinThreshold = 5; // deprecated DO NOT USE
+      int wordDiffMinThreshold = 4; // Remove stop words that appear more than this threshold, between labels
+      Util.Pair stopWordsRef = new Util.Pair(-4, 4); // the collocation to use
 
       machine = new CS4248Machine();
       machine.setParam(

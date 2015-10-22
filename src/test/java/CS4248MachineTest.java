@@ -40,17 +40,17 @@ public class CS4248MachineTest {
     App.CS4248Machine machine = new App.CS4248Machine();
 //    int[] featureCountMin = new int[]{2, 3, 4};
     int[] featureCountMin = new int[]{4}; // 4 is best
-    int numFolds[] = new int[]{2,3,4};
+    int numFolds[] = new int[]{3};
 //    int[] nGramSize = new int[]{2,3,4};
-    int[] nGramSize = new int[]{3,5,7,9};
+    int[] nGramSize = new int[]{3};
 //    double[] learningRates = new double[]{1.5};
-    double[] learningRates = new double[]{2, 1.7, 1.5, 1.2, 1.1};
-    double[] learningDecay = new double[]{0.75, .8};
+    double[] learningRates = new double[]{1.8};
+    double[] learningDecay = new double[]{.8};
     double[] terminationThreshold = new double[]{
 //        0.0000001,
 //        0.00000001,
-        0.000000001,
-//        0.0000000001, // best
+//        0.000000001,
+        0.0000000001, // best
 //        0.00000000001,
     };
     long timeoutPerDimen = App.LogisticRegressionClassifier.NO_TIMEOUT;
